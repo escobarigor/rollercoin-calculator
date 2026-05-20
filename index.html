@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RC Booom Calculator</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Crect%20width%3D%2764%27%20height%3D%2764%27%20rx%3D%2714%27%20fill%3D%27%230a0e14%27%2F%3E%3Crect%20x%3D%273%27%20y%3D%273%27%20width%3D%2758%27%20height%3D%2758%27%20rx%3D%2711%27%20fill%3D%27none%27%20stroke%3D%27%2303e1e4%27%20stroke-opacity%3D%27.32%27%20stroke-width%3D%272%27%2F%3E%3Cpath%20d%3D%27M37%205%20L13%2037%20L28%2037%20L23%2059%20L51%2025%20L34%2025%20Z%27%20fill%3D%27%2303e1e4%27%2F%3E%3Cpath%20d%3D%27M37%205%20L13%2037%20L28%2037%20L23%2059%20L51%2025%20L34%2025%20Z%27%20fill%3D%27none%27%20stroke%3D%27%237cf9fb%27%20stroke-width%3D%271%27%20stroke-opacity%3D%27.5%27%2F%3E%3C%2Fsvg%3E" />
+<meta name="description" content="Calcule seu poder máximo no RollerCoin e veja se você passa de liga." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<!-- ============================================================
+     ESTILO  (era css/style.css — agora embutido)
+     ============================================================ -->
+<style>
+:root {
+  --bg:        #0a0e14;
+  --bg-grid:   #11161f;
+  --card:      #121823;
+  --card-2:    #0e131c;
+  --line:      #233040;
+  --txt:       #e6edf3;
+  --txt-dim:   #7d8da0;
+  --cyan:      #03e1e4;
+  --cyan-dim:  #0a8587;
+  --green:     #3ddc84;
+  --amber:     #ffb547;
+  --test-yellow:#ffe600;
+  --shadow:    0 14px 40px -12px rgba(0,0,0,.7);
+  --tier-Bronze:   #cd7f4d;
+  --tier-Silver:   #b7c2cf;
+  --tier-Gold:     #ffce4a;
+  --tier-Platinum: #6fe3d0;
+  --tier-Diamond:  #7cc6ff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Chakra Petch', sans-serif;
+  background: radial-gradient(ellipse at 50% -10%, #16202e 0%, transparent 55%), var(--bg);
+  background-attachment: fixed;
+  color: var(--txt);
+  min-height: 100vh;
+  padding: 32px 18px 60px;
+  background-image:
+    linear-gradient(var(--bg-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+.scanline {
+  position: fixed; inset: 0; pointer-events: none; z-index: 50;
+  background: repeating-linear-gradient(to bottom, transparent 0 3px, rgba(0,0,0,.12) 3px 4px);
+  mix-blend-mode: overlay;
+}
+.wrap { max-width: 540px; margin: 0 auto; }
+.hd { text-align: center; margin-bottom: 26px; }
+.hd-mark { font-size: 30px; line-height: 1; filter: drop-shadow(0 0 10px var(--cyan)); }
+.hd h1 { font-size: 30px; font-weight: 700; letter-spacing: 2px; margin-top: 6px; }
+.hd h1 span { color: var(--cyan); text-shadow: 0 0 18px var(--cyan-dim); }
+.hd-sub { color: var(--txt-dim); font-size: 13px; margin-top: 4px; letter-spacing: .5px; }
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  padding: 20px; box-shadow: var(--shadow); margin-bottom: 18px;
+}
+.tabs {
+  display: flex; gap: 6px; background: var(--card-2);
+  border: 1px solid var(--line); border-radius: 10px; padding: 4px; margin-bottom: 18px;
+}
+.tab {
+  flex: 1; padding: 9px 8px; font-family: inherit; font-size: 13px; font-weight: 600;
+  letter-spacing: .4px; color: var(--txt-dim); background: transparent; border: 0;
+  border-radius: 7px; cursor: pointer; transition: all .15s ease;
+}
+.tab.is-active { color: var(--bg); background: var(--cyan); box-shadow: 0 0 16px -2px var(--cyan-dim); }
+.pane.is-hidden { display: none; }
+.lbl {
+  display: block; font-size: 12px; font-weight: 600; color: var(--txt-dim);
+  letter-spacing: .6px; text-transform: uppercase; margin-bottom: 8px;
+}
+.lbl-mt { margin-top: 14px; }
+.field { display: flex; gap: 8px; }
+.field input[type=text] {
+  flex: 1; min-width: 0; font-family: 'JetBrains Mono', monospace; font-size: 14px;
+  color: var(--txt); background: var(--card-2); border: 1px solid var(--line);
+  border-radius: 9px; padding: 11px 13px; transition: border-color .15s ease;
+}
+.field input[type=text]:focus {
+  outline: none; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(3,225,228,.12);
+}
+.field input::placeholder { color: #495568; }
+.unit {
+  font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--txt);
+  background: var(--card-2); border: 1px solid var(--line); border-radius: 9px;
+  padding: 0 8px; cursor: pointer;
+}
+.btn {
+  font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: .6px;
+  color: var(--bg); background: var(--cyan); border: 0; border-radius: 9px;
+  padding: 11px 18px; cursor: pointer; white-space: nowrap;
+  transition: transform .1s ease, box-shadow .15s ease; box-shadow: 0 0 18px -4px var(--cyan-dim);
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn:disabled { opacity: .5; cursor: progress; transform: none; }
+.hint { font-size: 12px; color: var(--txt-dim); margin-top: 10px; }
+.hint.is-error { color: var(--amber); }
+.result.is-hidden { display: none; }
+.result-top {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 14px; margin-bottom: 18px;
+}
+.badge {
+  display: flex; flex-direction: column; gap: 2px; padding: 10px 16px;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--card-2);
+  border-left: 3px solid var(--cyan);
+}
+.badge-tier { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.badge-name { font-size: 18px; font-weight: 700; }
+.result-power { text-align: right; }
+.rp-label {
+  display: block; font-size: 11px; color: var(--txt-dim);
+  text-transform: uppercase; letter-spacing: .8px;
+}
+.rp-value { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; color: var(--cyan); }
+.rp-bonus {
+  display: block; font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 700; color: var(--green); margin-top: 4px;
+}
+.rp-bonus.is-hidden { display: none; }
+.prog { margin-bottom: 16px; }
+.prog-bar {
+  height: 12px; border-radius: 6px; background: var(--card-2);
+  border: 1px solid var(--line); overflow: hidden;
+}
+.prog-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--cyan-dim), var(--cyan));
+  box-shadow: 0 0 12px var(--cyan-dim);
+  transition: width .6s cubic-bezier(.2,.7,.3,1);
+}
+.prog-ends {
+  display: flex; justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--txt-dim); margin-top: 6px;
+}
+.verdict {
+  font-size: 14px; font-weight: 600; line-height: 1.5; padding: 13px 15px;
+  border-radius: 10px; background: var(--card-2); border: 1px solid var(--line);
+}
+.verdict.ok    { border-color: var(--green); color: var(--green); }
+.verdict.climb { border-color: var(--amber); color: var(--amber); }
+.leagues-box { margin-top: 16px; }
+.leagues-box summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--cyan); padding: 4px 0; }
+.leagues-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12.5px; }
+.leagues-table td { padding: 7px 8px; border-bottom: 1px solid var(--line); }
+.leagues-table td:last-child {
+  text-align: right; font-family: 'JetBrains Mono', monospace; color: var(--txt-dim);
+}
+.leagues-table tr.is-current td { background: rgba(3,225,228,.08); color: var(--cyan); font-weight: 700; }
+.leagues-table tr.is-current td:last-child { color: var(--cyan); }
+.lt-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  margin-right: 8px; vertical-align: middle;
+}
+.ft { text-align: center; margin-top: 28px; }
+.ft p { font-size: 11px; color: var(--txt-dim); }
+
+/* ---- Simulador de crescimento ---- */
+.sim.is-hidden { display: none; }
+.sim-title { font-size: 16px; font-weight: 700; }
+.sim-sub { font-size: 12px; color: var(--txt-dim); margin: 4px 0 16px; }
+.add-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.add-row input {
+  flex: 1; min-width: 0; font-family: 'JetBrains Mono', monospace; font-size: 14px;
+  color: var(--txt); background: var(--card-2); border: 1px solid var(--line);
+  border-radius: 9px; padding: 10px 12px; transition: border-color .15s ease;
+}
+.add-row input:focus {
+  outline: none; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(3,225,228,.12);
+}
+.add-row input::placeholder { color: #495568; }
+.add-row select {
+  font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--txt);
+  background: var(--card-2); border: 1px solid var(--line); border-radius: 9px;
+  padding: 0 8px; cursor: pointer;
+}
+.row-x {
+  width: 40px; flex: none; font-size: 18px; line-height: 1; color: var(--txt-dim);
+  background: var(--card-2); border: 1px solid var(--line); border-radius: 9px;
+  cursor: pointer; transition: all .15s ease;
+}
+.row-x:hover { color: var(--amber); border-color: var(--amber); }
+.btn-ghost {
+  font-family: inherit; font-size: 13px; font-weight: 600; color: var(--cyan);
+  background: transparent; border: 1px dashed var(--cyan-dim); border-radius: 9px;
+  padding: 9px 14px; cursor: pointer; margin: 4px 0 18px; transition: all .15s ease;
+}
+.btn-ghost:hover { background: rgba(3,225,228,.07); }
+.sim-result { border-top: 1px solid var(--line); padding-top: 14px; }
+.sim-line {
+  display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0;
+}
+.sim-line-lbl {
+  font-size: 12px; color: var(--txt-dim); text-transform: uppercase; letter-spacing: .5px;
+}
+.sim-line-val { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700; }
+.sim-line-val.accent { color: var(--cyan); }
+.sim-line.total { border-top: 1px solid var(--line); margin-top: 4px; padding-top: 9px; }
+.sim-line.total .sim-line-val { font-size: 18px; color: var(--cyan); }
+.sim-bonus {
+  margin: 2px 0 14px; padding: 11px 12px; border: 1px solid var(--line);
+  border-radius: 9px; background: var(--card-2);
+}
+.sim-bonus-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12.5px; color: var(--txt); padding: 4px 0;
+}
+.sim-bonus-lbl { color: var(--txt-dim); }
+.sim-bonus-cur { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--green); }
+.sim-bonus-field { display: flex; align-items: center; gap: 6px; color: var(--txt-dim); }
+.sim-bonus-field input {
+  width: 96px; font-family: 'JetBrains Mono', monospace; font-size: 14px;
+  color: var(--txt); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 8px; padding: 7px 10px; text-align: right;
+}
+.sim-bonus-field input:focus {
+  outline: none; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(3,225,228,.12);
+}
+.sim-bonus-hint { font-size: 11px; color: var(--txt-dim); margin-top: 8px; line-height: 1.45; }
+.sim-bonus-hint b { color: var(--cyan); }
+.sim-leagues {
+  display: flex; align-items: center; gap: 8px; margin: 10px 0 4px; flex-wrap: wrap;
+}
+.sim-tag {
+  font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 7px;
+  background: var(--card-2); border: 1px solid var(--line);
+}
+.sim-arrow { color: var(--txt-dim); font-weight: 700; }
+
+.topbar {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  margin-bottom: 14px; flex-wrap: wrap;
+}
+.lang-picker {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.lang-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: inherit; font-size: 12px; font-weight: 700;
+  color: var(--txt-dim); background: var(--card); border: 1px solid var(--line);
+  border-radius: 999px; padding: 8px 12px; cursor: pointer; transition: all .15s ease;
+}
+.lang-btn:hover { border-color: var(--cyan); color: var(--txt); }
+.lang-btn.is-active {
+  color: var(--bg); background: var(--cyan); border-color: var(--cyan);
+  box-shadow: 0 0 16px -5px var(--cyan-dim);
+}
+.lang-flag { font-size: 16px; line-height: 1; }
+.test-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 42px; font-family: inherit; font-size: 12px; font-weight: 800;
+  letter-spacing: .8px; text-transform: uppercase; color: #231600;
+  background: linear-gradient(180deg, #fff48a, var(--test-yellow));
+  border: 1px solid #ffcf00; border-radius: 999px; padding: 10px 16px;
+  box-shadow: 0 0 24px rgba(255,230,0,.45), inset 0 1px 0 rgba(255,255,255,.5);
+}
+.test-badge:hover { filter: brightness(1.04); }
+
+@media (max-width: 460px) {
+  .result-top { flex-direction: column; align-items: flex-start; }
+  .result-power { text-align: left; }
+  .topbar { align-items: stretch; }
+  .lang-picker, .test-badge { width: 100%; }
+  .lang-picker { justify-content: space-between; }
+  .lang-btn { flex: 1; justify-content: center; }
+  .test-badge { text-align: center; }
+}
+/* ---- Cálculo por rack ---- */
+.rack-types { display: flex; gap: 8px; }
+.rack-type {
+  flex: 1; font-family: inherit; font-size: 12px; font-weight: 600;
+  color: var(--txt-dim); background: var(--card-2); border: 1px solid var(--line);
+  border-radius: 9px; padding: 10px 6px; cursor: pointer; transition: all .15s ease;
+}
+.rack-type.is-active { color: var(--bg); background: var(--cyan); border-color: var(--cyan); }
+.racks-pair { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.rack-side { flex: 1; min-width: 200px; }
+.rack-side-h {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px;
+  color: var(--txt-dim); margin-bottom: 6px;
+  display: flex; justify-content: space-between; align-items: center; gap: 6px;
+}
+.rack-copy {
+  font-family: inherit; font-size: 10px; font-weight: 600; color: var(--cyan);
+  background: transparent; border: 1px solid var(--cyan-dim); border-radius: 6px;
+  padding: 3px 8px; cursor: pointer; text-transform: none; letter-spacing: 0;
+}
+.rack-copy:hover { background: rgba(3,225,228,.08); }
+.rack-unit {
+  border: 1px solid var(--line); border-radius: 10px; background: var(--card-2); padding: 7px;
+}
+.rack-shelves { display: flex; flex-direction: column; gap: 5px; }
+.rack-shelves.invalid { outline: 1px solid var(--amber); outline-offset: 3px; border-radius: 8px; }
+.rack-shelf { display: flex; gap: 5px; min-height: 52px; }
+.rack-slot {
+  flex: 1; min-width: 0; border: 1px dashed var(--line); border-radius: 6px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; color: var(--txt-dim); font-size: 10px;
+}
+.rack-slot-add { cursor: pointer; transition: all .12s ease; }
+.rack-slot-add:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(3,225,228,.05); }
+.rack-slot-add .rs-plus { font-size: 16px; line-height: 1; font-weight: 600; }
+.rack-mch {
+  position: relative; flex: 1; min-width: 0;
+  border-radius: 6px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 1px; padding: 4px 6px;
+  font-weight: 700; text-align: center;
+}
+.rack-mch.s2 { flex: 2; }
+.rmn { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.rmp { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; opacity: .85; }
+.rack-mch-x {
+  position: absolute; top: 2px; right: 4px; font-size: 11px; line-height: 1;
+  color: inherit; opacity: .65; background: transparent; border: 0; cursor: pointer;
+  padding: 1px 3px; font-weight: 700;
+}
+.rack-mch-x:hover { opacity: 1; }
+.rack-add-zone { margin-top: 7px; }
+.rack-add-btn {
+  width: 100%; font-family: inherit; font-size: 11px; font-weight: 600;
+  color: var(--cyan); background: transparent; border: 1px dashed var(--cyan-dim);
+  border-radius: 7px; padding: 8px; cursor: pointer;
+}
+.rack-add-btn:hover { background: rgba(3,225,228,.06); }
+.rack-editor {
+  border: 1px solid var(--cyan); border-radius: 8px; background: var(--bg);
+  padding: 9px; display: flex; flex-direction: column; gap: 7px;
+}
+.re-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--cyan); }
+.rack-editor input, .rack-editor select {
+  width: 100%; min-width: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  color: var(--txt); background: var(--card-2); border: 1px solid var(--line);
+  border-radius: 6px; padding: 7px 8px;
+}
+.rack-editor input:focus, .rack-editor select:focus {
+  outline: none; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(3,225,228,.12);
+}
+.rack-editor input::placeholder { color: #495568; }
+.re-dots { display: flex; gap: 5px; }
+.re-dot {
+  flex: 1; height: 22px; border-radius: 6px; border: 2px solid transparent;
+  cursor: pointer; padding: 0; transition: border-color .12s ease;
+}
+.re-dot.is-active { border-color: var(--txt); }
+.re-row { display: flex; gap: 6px; }
+.re-row .re-power { flex: 1; }
+.re-row .re-unit { width: 78px; flex: none; }
+.re-size { display: flex; gap: 6px; }
+.re-sz {
+  flex: 1; font-family: inherit; font-size: 11px; font-weight: 600;
+  color: var(--txt-dim); background: var(--card-2); border: 1px solid var(--line);
+  border-radius: 6px; padding: 7px 4px; cursor: pointer;
+}
+.re-sz.is-active { color: var(--bg); background: var(--cyan); border-color: var(--cyan); }
+.re-actions { display: flex; gap: 6px; }
+.re-ok, .re-cancel {
+  flex: 1; font-family: inherit; font-size: 12px; font-weight: 700;
+  border-radius: 6px; padding: 8px; cursor: pointer;
+}
+.re-ok { color: #173404; background: var(--green); border: 0; }
+.re-ok:hover { filter: brightness(1.08); }
+.re-cancel { color: var(--amber); background: transparent; border: 1px solid var(--amber); }
+.re-cancel:hover { background: rgba(255,181,71,.08); }
+.rack-result { border-top: 1px solid var(--line); margin-top: 14px; padding-top: 6px; }
+.rack-grp-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px;
+  color: var(--cyan); margin: 14px 0 4px;
+}
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+
+<main class="wrap">
+
+  <div class="topbar">
+    <div class="lang-picker" aria-label="Language selector">
+      <button class="lang-btn is-active" type="button" data-lang="pt-BR"><span class="lang-flag">🇧🇷</span><span>Português</span></button>
+      <button class="lang-btn" type="button" data-lang="en-US"><span class="lang-flag">🇺🇸</span><span>English</span></button>
+      <button class="lang-btn" type="button" data-lang="es-ES"><span class="lang-flag">🇪🇸</span><span>Español</span></button>
+    </div>
+    <button class="test-badge" type="button" id="test-badge">VERSÃO DE TESTES</button>
+  </div>
+
+  <header class="hd">
+    <div class="hd-mark">⚡</div>
+    <h1>RC <span>Booom</span> Calculator</h1>
+    <p class="hd-sub">Calculadora de poder máximo &amp; liga · RollerCoin</p>
+  </header>
+
+  <section class="card">
+    <div class="tabs" role="tablist">
+      <button class="tab is-active" data-mode="nick" role="tab">Por Nick / Link</button>
+      <button class="tab" data-mode="manual" role="tab">Poder manual</button>
+    </div>
+
+    <div class="pane" data-pane="nick">
+      <label class="lbl" for="nick">Nick ou link do perfil</label>
+      <div class="field">
+        <input id="nick" type="text" autocomplete="off" spellcheck="false"
+               placeholder="escobooom  ou  rollercoin.com/p/escobooom" />
+        <button id="btn-fetch" class="btn">Calcular</button>
+      </div>
+      <p class="hint" id="nick-hint">Cola o nick ou o link completo do perfil público.</p>
+    </div>
+
+    <div class="pane is-hidden" data-pane="manual">
+      <label class="lbl" for="power">Poder máximo</label>
+      <div class="field">
+        <input id="power" type="text" autocomplete="off" spellcheck="false"
+               placeholder="ex: 12.5 PH/s" />
+        <select id="unit" class="unit">
+          <option value="">(na unidade)</option>
+          <option value="GH">GH/s</option>
+          <option value="TH">TH/s</option>
+          <option value="PH" selected>PH/s</option>
+          <option value="EH">EH/s</option>
+          <option value="ZH">ZH/s</option>
+        </select>
+        <button id="btn-manual" class="btn">Calcular</button>
+      </div>
+      <label class="lbl lbl-mt" for="power-bonus">Bônus de poder em % (opcional)</label>
+      <div class="field">
+        <input id="power-bonus" type="text" inputmode="decimal"
+               autocomplete="off" spellcheck="false"
+               placeholder="ex: 1079.68" />
+      </div>
+      <p class="hint">Sem internet ou só pra simular: digita o valor direto. O bônus aparece no resultado e já entra no simulador.</p>
+    </div>
+  </section>
+
+  <section class="card result is-hidden" id="result">
+    <div class="result-top">
+      <div class="badge" id="league-badge">
+        <span class="badge-tier" id="badge-tier">—</span>
+        <span class="badge-name" id="badge-name">—</span>
+      </div>
+      <div class="result-power">
+        <span class="rp-label">Poder máximo</span>
+        <span class="rp-value" id="rp-value">—</span>
+        <span class="rp-bonus is-hidden" id="rp-bonus">—</span>
+      </div>
+    </div>
+
+    <div class="prog">
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+      <div class="prog-ends">
+        <span id="prog-min">—</span>
+        <span id="prog-max">—</span>
+      </div>
+    </div>
+
+    <div class="verdict" id="verdict">—</div>
+
+    <details class="leagues-box">
+      <summary>Ver as 15 ligas</summary>
+      <table class="leagues-table" id="leagues-table"></table>
+    </details>
+  </section>
+
+  <!-- ===== Simulador de crescimento ===== -->
+  <section class="card sim is-hidden" id="sim">
+    <h2 class="sim-title">Simular crescimento</h2>
+    <p class="sim-sub">Some poder por cima do atual e veja se sobe de liga.</p>
+
+    <!-- linhas de adição entram aqui (uma = simples, várias = empilhado) -->
+    <div id="add-rows"></div>
+    <button id="btn-add-row" class="btn-ghost" type="button">+ adicionar poder</button>
+
+    <div class="sim-bonus" id="sim-bonus-wrap">
+      <div class="sim-bonus-row">
+        <span class="sim-bonus-lbl">Bônus atual</span>
+        <span class="sim-bonus-cur" id="sim-bonus-cur">+0%</span>
+      </div>
+      <div class="sim-bonus-row">
+        <span class="sim-bonus-lbl">+ Bônus adicional</span>
+        <span class="sim-bonus-field">
+          <input type="text" id="sim-bonus-add" inputmode="decimal"
+                 autocomplete="off" value="0" />
+          <span>%</span>
+        </span>
+      </div>
+      <p class="sim-bonus-hint">
+        Digite só o bônus <b>extra</b> que pretende ganhar (coleções, eventos).
+        O simulador aplica bônus atual + adicional — e o adicional também
+        aumenta o poder que você já tem.
+      </p>
+    </div>
+
+    <div class="sim-result">
+      <div class="sim-line">
+        <span class="sim-line-lbl">Poder atual</span>
+        <span class="sim-line-val" id="sim-base">—</span>
+      </div>
+      <div class="sim-line">
+        <span class="sim-line-lbl" id="sim-added-lbl">+ Adicionado</span>
+        <span class="sim-line-val accent" id="sim-added">—</span>
+      </div>
+      <div class="sim-line total">
+        <span class="sim-line-lbl">Novo total</span>
+        <span class="sim-line-val" id="sim-total">—</span>
+      </div>
+
+      <div class="sim-leagues">
+        <span class="sim-tag" id="sim-tag-base">—</span>
+        <span class="sim-arrow">→</span>
+        <span class="sim-tag" id="sim-tag-new">—</span>
+      </div>
+
+      <div class="prog">
+        <div class="prog-bar"><div class="prog-fill" id="sim-prog-fill"></div></div>
+        <div class="prog-ends">
+          <span id="sim-prog-min">—</span>
+          <span id="sim-prog-max">—</span>
+        </div>
+      </div>
+
+      <div class="verdict" id="sim-verdict">—</div>
+    </div>
+  </section>
+
+  <!-- ===== Cálculo por rack ===== -->
+  <section class="card" id="rack">
+    <h2 class="sim-title">Cálculo por rack</h2>
+    <p class="sim-sub">Monte o rack atual e o rack final depois da troca. O lado <b>Rack depois</b> deve representar o estado final completo do rack; use <b>copiar atual → depois</b> antes de adicionar novas máquinas. Toque nos slots vazios para colocar máquinas; o ✕ remove. O simulador usa a fórmula oficial: o bônus do rack é somado plano, sem multiplicar pelo bônus de coleção.</p>
+
+    <label class="lbl">Tipo de rack</label>
+    <div class="rack-types" id="rack-types">
+      <button class="rack-type is-active" type="button" data-shelves="3">3 prateleiras · 6 espaços</button>
+      <button class="rack-type" type="button" data-shelves="4">4 prateleiras · 8 espaços</button>
+    </div>
+
+    <label class="lbl lbl-mt" for="rack-bonus">Bônus local do rack (%)</label>
+    <div class="field">
+      <input id="rack-bonus" type="text" inputmode="decimal" autocomplete="off"
+             value="0" placeholder="ex: 12" />
+    </div>
+
+    <div class="racks-pair">
+      <div class="rack-side">
+        <div class="rack-side-h"><span>Rack atual</span></div>
+        <div class="rack-unit" data-rack="atual"></div>
+      </div>
+      <div class="rack-side">
+        <div class="rack-side-h">
+          <span>Rack depois</span>
+          <button class="rack-copy" type="button" data-copy="depois">copiar atual → depois</button>
+        </div>
+        <div class="rack-unit" data-rack="depois"></div>
+      </div>
+    </div>
+
+    <div class="rack-result" id="rack-result"></div>
+  </section>
+
+  <footer class="ft">
+    <p>RC Booom Calculator · poder, liga e simulação de crescimento · projeto não-oficial de fã, sem vínculo com o RollerCoin.</p>
+  </footer>
+
+</main>
+
+<!-- ============================================================
+     NÚCLEO  (era js/leagues.js — agora embutido)
+     Lógica de ligas pura, funciona 100% offline.
+     ============================================================ -->
+<script>
+const UNIT = { 'GH':1, 'TH':1e3, 'PH':1e6, 'EH':1e9, 'ZH':1e12 };
+
+const LEAGUES = [
+  { id:'bronze_1',   name:'Bronze I',     tier:'Bronze',   min:0 },
+  { id:'bronze_2',   name:'Bronze II',    tier:'Bronze',   min:5e6 },
+  { id:'bronze_3',   name:'Bronze III',   tier:'Bronze',   min:30e6 },
+  { id:'silver_1',   name:'Silver I',     tier:'Silver',   min:100e6 },
+  { id:'silver_2',   name:'Silver II',    tier:'Silver',   min:200e6 },
+  { id:'silver_3',   name:'Silver III',   tier:'Silver',   min:500e6 },
+  { id:'gold_1',     name:'Gold I',       tier:'Gold',     min:1e9 },
+  { id:'gold_2',     name:'Gold II',      tier:'Gold',     min:2e9 },
+  { id:'gold_3',     name:'Gold III',     tier:'Gold',     min:5e9 },
+  { id:'platinum_1', name:'Platinum I',   tier:'Platinum', min:15e9 },
+  { id:'platinum_2', name:'Platinum II',  tier:'Platinum', min:50e9 },
+  { id:'platinum_3', name:'Platinum III', tier:'Platinum', min:100e9 },
+  { id:'diamond_1',  name:'Diamond I',    tier:'Diamond',  min:200e9 },
+  { id:'diamond_2',  name:'Diamond II',   tier:'Diamond',  min:400e9 },
+  { id:'diamond_3',  name:'Diamond III',  tier:'Diamond',  min:10e12 },
+];
+
+const I18N = {
+  'pt-BR': {
+    htmlLang: 'pt-BR',
+    title: 'RC Booom Calculator',
+    metaDescription: 'Calcule seu poder máximo no RollerCoin e veja se você passa de liga.',
+    testBadge: 'VERSÃO DE TESTES',
+    languageSelector: 'Seletor de idioma',
+    headerSubtitle: 'Calculadora de poder máximo & liga · RollerCoin',
+    tabNick: 'Por Nick / Link',
+    tabManual: 'Poder manual',
+    nickLabel: 'Nick ou link do perfil',
+    nickPlaceholder: 'escobooom  ou  rollercoin.com/p/escobooom',
+    calculate: 'Calcular',
+    nickHint: 'Cola o nick ou o link completo do perfil público.',
+    powerLabel: 'Poder máximo',
+    unitInline: '(na unidade)',
+    powerPlaceholder: 'ex: 12.5 PH/s',
+    powerBonusLabel: 'Bônus de poder em % (opcional)',
+    powerBonusPlaceholder: 'ex: 1079.68',
+    manualHint: 'Sem internet ou só pra simular: digita o valor direto. O bônus aparece no resultado e já entra no simulador.',
+    maxPowerLabel: 'Poder máximo',
+    viewLeagues: 'Ver as 15 ligas',
+    growthTitle: 'Simular crescimento',
+    growthSubtitle: 'Some poder por cima do atual e veja se sobe de liga.',
+    addPower: '+ adicionar poder',
+    currentBonus: 'Bônus atual',
+    extraBonus: '+ Bônus adicional',
+    growthHint: 'Digite só o bônus extra que pretende ganhar (coleções, eventos). O simulador aplica bônus atual + adicional — e o adicional também aumenta o poder que você já tem.',
+    currentPower: 'Poder atual',
+    addedPower: '+ Adicionado',
+    gainPowerAndBonus: '+ Ganho (poder + bônus)',
+    addPowerValuePlaceholder: 'ex: 50',
+    newTotal: 'Novo total',
+    rackTitle: 'Cálculo por rack',
+    rackSubtitle: 'Monte o rack atual e o rack final depois da troca. O lado Rack depois deve representar o estado final completo do rack; use copiar atual → depois antes de adicionar novas máquinas. Toque nos slots vazios para colocar máquinas; o ✕ remove. O simulador usa a fórmula oficial: o bônus do rack é somado plano, sem multiplicar pelo bônus de coleção.',
+    rackType: 'Tipo de rack',
+    rackType3: '3 prateleiras · 6 espaços',
+    rackType4: '4 prateleiras · 8 espaços',
+    rackBonusLabel: 'Bônus local do rack (%)',
+    rackBonusPlaceholder: 'ex: 12',
+    rackCurrent: 'Rack atual',
+    rackAfter: 'Rack depois',
+    rackCopy: 'copiar atual → depois',
+    footer: 'RC Booom Calculator · poder, liga e simulação de crescimento · projeto não-oficial de fã, sem vínculo com o RollerCoin.',
+    alertBadPower: 'Não entendi esse valor de poder. Tenta algo como "12.5 PH/s".',
+    invalidNick: 'Digite um nick ou link válido.',
+    proxyMissing: 'Proxy não configurado. Publique o worker.js e cole a URL em CONFIG.workerUrl. Por enquanto, use a aba "Poder manual".',
+    fetchingProfile: 'Buscando "{slug}"...',
+    profileLoaded: 'Perfil "{nick}" carregado.',
+    connectionError: 'Sem conexão com o proxy. Tente de novo.',
+    playerNotFound: 'Jogador não encontrado.',
+    proxyNoPower: 'O proxy não devolveu o poder. Verifique o worker.js.',
+    absoluteTop: '🏆 Topo absoluto! Você já está na Diamond III, a liga mais alta.',
+    needForNext: 'Para subir para {next} faltam {needed} de poder (meta: {goal}).',
+    bonusSuffix: 'de bônus',
+    errorPrefix: 'Erro:',
+    addPowerToSimulate: 'Adicione poder acima para simular o crescimento.',
+    leagueJump: '🎉 Você sobe de {from} para {to}{extra}',
+    multiLeagueJump: ' — pula {count} ligas!',
+    singleLeagueJump: '!',
+    maxLeagueAlready: 'Já na liga máxima (Diamond III).',
+    staysInLeague: 'Continua em {league}. Faltam {needed} para {next}.',
+    addMachine: '+ adicionar máquina',
+    remove: 'remover',
+    addMachineTitle: 'Nova máquina',
+    nameOrId: 'Nome / ID',
+    rackPowerPlaceholder: 'Poder',
+    globalBonusPlaceholder: 'Bônus global %',
+    oneCell: '1 célula',
+    twoCells: '2 células',
+    placeMachine: '✓ colocar',
+    cancel: '✕ cancelar',
+    emptySlot: 'slot vazio',
+    addMachineSlot: 'adicionar máquina',
+    currentRackSection: 'Rack atual',
+    rawMachinePower: 'Poder bruto das máquinas',
+    rackPowerWithLocal: 'Poder do rack (com +{pct}% local)',
+    listedCollectionBonus: 'Bônus de coleção listado (info)',
+    afterRackSection: 'Rack depois',
+    tradeDiffSection: 'Diferença da troca',
+    deltaRawPower: 'Δ poder bruto',
+    deltaRackBonus: 'Δ bônus local do rack',
+    deltaListedCollection: 'Δ bônus de coleção listado',
+    collectionInfoHint: 'No RollerCoin, bônus de coleção é da conta e não muda só por trocar miners de rack. Os valores acima ficam como referência das máquinas listadas.',
+    accountImpact: 'Impacto na conta',
+    estimatedFinalPower: 'Poder final estimado',
+    currentLeague: 'Liga atual',
+    afterLeague: 'Liga depois',
+    leagueLabel: 'Liga',
+    maxLeagueLabel: 'Diamond III (máxima)',
+    missingForLeague: 'Falta para {next}',
+    calcAccountHint: 'Calcule seu poder nas abas acima (Nick ou Manual) para ver o impacto na conta e nas ligas.',
+    invalidLayout: 'Layout inválido em {which}: precisa de {need} prateleiras, mas o tipo tem {shelves}. Ajuste tamanhos ou o tipo de rack.',
+    bothRacks: 'os dois racks',
+    currentRackOnly: 'o rack atual',
+    afterRackOnly: 'o rack depois',
+    fillBothRacks: 'Coloque máquinas nos dois racks para comparar.',
+    noChange: 'Atual e depois são equivalentes — nenhuma mudança.',
+    infoOnlyCollectionDiff: 'O poder do rack não mudou. A diferença no bônus de coleção listado é apenas informativa.',
+    incompleteAfterRack: 'O Rack depois ficou com menos poder que o atual. Se sua intenção era somar máquinas, copie o Rack atual para o depois antes de editar.',
+    worseRawPower: 'Atenção: a troca piora o poder bruto do rack.',
+    positiveTrade: 'Troca positiva: + {power} bruto.',
+    qualityNormal: 'Normal',
+    qualityUncommon: 'Incomum',
+    qualityRare: 'Rara',
+    qualityEpic: 'Épica',
+    qualityLegendary: 'Lendária',
+    qualityUnreal: 'Unreal',
+    tierBronze: 'Bronze',
+    tierSilver: 'Prata',
+    tierGold: 'Ouro',
+    tierPlatinum: 'Platina',
+    tierDiamond: 'Diamante'
+  },
+  'en-US': {
+    htmlLang: 'en-US',
+    title: 'RC Booom Calculator',
+    metaDescription: 'Calculate your maximum RollerCoin power and see whether you move up a league.',
+    testBadge: 'TEST BUILD',
+    languageSelector: 'Language selector',
+    headerSubtitle: 'Max power & league calculator · RollerCoin',
+    tabNick: 'By Nick / Link',
+    tabManual: 'Manual power',
+    nickLabel: 'Profile nick or link',
+    nickPlaceholder: 'escobooom  or  rollercoin.com/p/escobooom',
+    calculate: 'Calculate',
+    nickHint: 'Paste the nick or the full public profile link.',
+    powerLabel: 'Maximum power',
+    unitInline: '(already in unit)',
+    powerPlaceholder: 'e.g. 12.5 PH/s',
+    powerBonusLabel: 'Power bonus % (optional)',
+    powerBonusPlaceholder: 'e.g. 1079.68',
+    manualHint: 'Offline or just testing a scenario: type the value directly. The bonus appears in the result and is already used by the simulator.',
+    maxPowerLabel: 'Maximum power',
+    viewLeagues: 'View all 15 leagues',
+    growthTitle: 'Simulate growth',
+    growthSubtitle: 'Add power on top of your current total and see whether you rank up.',
+    addPower: '+ add power',
+    currentBonus: 'Current bonus',
+    extraBonus: '+ Extra bonus',
+    growthHint: 'Enter only the extra bonus you expect to gain from collections or events. The simulator applies current bonus + extra bonus, and the extra bonus also boosts the power you already have.',
+    currentPower: 'Current power',
+    addedPower: '+ Added',
+    gainPowerAndBonus: '+ Gain (power + bonus)',
+    addPowerValuePlaceholder: 'e.g. 50',
+    newTotal: 'New total',
+    rackTitle: 'Rack calculation',
+    rackSubtitle: 'Build the current rack and the final rack after the swap. The Rack after side must represent the full final rack state; use copy current → after before adding new machines. Tap empty slots to place machines; ✕ removes them. The simulator follows the official formula: rack bonus is added flat and does not multiply collection bonus.',
+    rackType: 'Rack type',
+    rackType3: '3 shelves · 6 slots',
+    rackType4: '4 shelves · 8 slots',
+    rackBonusLabel: 'Local rack bonus (%)',
+    rackBonusPlaceholder: 'e.g. 12',
+    rackCurrent: 'Current rack',
+    rackAfter: 'Rack after',
+    rackCopy: 'copy current → after',
+    footer: 'RC Booom Calculator · power, leagues and growth simulation · unofficial fan project, not affiliated with RollerCoin.',
+    alertBadPower: 'I could not read that power value. Try something like "12.5 PH/s".',
+    invalidNick: 'Enter a valid nick or profile link.',
+    proxyMissing: 'Proxy not configured. Publish worker.js and paste its URL into CONFIG.workerUrl. For now, use the Manual power tab.',
+    fetchingProfile: 'Loading "{slug}"...',
+    profileLoaded: 'Profile "{nick}" loaded.',
+    connectionError: 'Could not reach the proxy. Try again.',
+    playerNotFound: 'Player not found.',
+    proxyNoPower: 'The proxy did not return the power value. Check worker.js.',
+    absoluteTop: '🏆 Absolute top! You are already in Diamond III, the highest league.',
+    needForNext: 'You need {needed} more power to reach {next} (target: {goal}).',
+    bonusSuffix: 'bonus',
+    errorPrefix: 'Error:',
+    addPowerToSimulate: 'Add power above to simulate growth.',
+    leagueJump: '🎉 You move up from {from} to {to}{extra}',
+    multiLeagueJump: ' — jumping {count} leagues!',
+    singleLeagueJump: '!',
+    maxLeagueAlready: 'Already in the top league (Diamond III).',
+    staysInLeague: 'You stay in {league}. You still need {needed} for {next}.',
+    addMachine: '+ add machine',
+    remove: 'remove',
+    addMachineTitle: 'New machine',
+    nameOrId: 'Name / ID',
+    rackPowerPlaceholder: 'Power',
+    globalBonusPlaceholder: 'Global bonus %',
+    oneCell: '1 cell',
+    twoCells: '2 cells',
+    placeMachine: '✓ place',
+    cancel: '✕ cancel',
+    emptySlot: 'empty slot',
+    addMachineSlot: 'add machine',
+    currentRackSection: 'Current rack',
+    rawMachinePower: 'Raw machine power',
+    rackPowerWithLocal: 'Rack power (with +{pct}% local)',
+    listedCollectionBonus: 'Listed collection bonus (info)',
+    afterRackSection: 'Rack after',
+    tradeDiffSection: 'Swap difference',
+    deltaRawPower: 'Δ raw power',
+    deltaRackBonus: 'Δ local rack bonus',
+    deltaListedCollection: 'Δ listed collection bonus',
+    collectionInfoHint: 'In RollerCoin, collection bonus belongs to the account and does not change just because you move miners between racks. The values above stay as reference for the listed machines.',
+    accountImpact: 'Account impact',
+    estimatedFinalPower: 'Estimated final power',
+    currentLeague: 'Current league',
+    afterLeague: 'League after',
+    leagueLabel: 'League',
+    maxLeagueLabel: 'Diamond III (highest)',
+    missingForLeague: 'Missing for {next}',
+    calcAccountHint: 'Calculate your power above first (By Nick or Manual) to see account and league impact.',
+    invalidLayout: 'Invalid layout in {which}: it needs {need} shelves, but this rack type only has {shelves}. Adjust the machine sizes or change the rack type.',
+    bothRacks: 'both racks',
+    currentRackOnly: 'the current rack',
+    afterRackOnly: 'the rack after',
+    fillBothRacks: 'Place machines in both racks to compare them.',
+    noChange: 'Current and after are equivalent — no change.',
+    infoOnlyCollectionDiff: 'Rack power did not change. The listed collection bonus difference is informational only.',
+    incompleteAfterRack: 'Rack after has less power than the current rack. If your goal was to add machines, copy the current rack into the after rack before editing.',
+    worseRawPower: 'Warning: this swap reduces the rack\'s raw power.',
+    positiveTrade: 'Positive swap: + {power} raw.',
+    qualityNormal: 'Normal',
+    qualityUncommon: 'Uncommon',
+    qualityRare: 'Rare',
+    qualityEpic: 'Epic',
+    qualityLegendary: 'Legendary',
+    qualityUnreal: 'Unreal',
+    tierBronze: 'Bronze',
+    tierSilver: 'Silver',
+    tierGold: 'Gold',
+    tierPlatinum: 'Platinum',
+    tierDiamond: 'Diamond'
+  },
+  'es-ES': {
+    htmlLang: 'es-ES',
+    title: 'RC Booom Calculator',
+    metaDescription: 'Calcula tu poder máximo en RollerCoin y comprueba si subes de liga.',
+    testBadge: 'VERSIÓN DE PRUEBAS',
+    languageSelector: 'Selector de idioma',
+    headerSubtitle: 'Calculadora de poder máximo y liga · RollerCoin',
+    tabNick: 'Por nick / enlace',
+    tabManual: 'Poder manual',
+    nickLabel: 'Nick o enlace del perfil',
+    nickPlaceholder: 'escobooom  o  rollercoin.com/p/escobooom',
+    calculate: 'Calcular',
+    nickHint: 'Pega el nick o el enlace completo del perfil público.',
+    powerLabel: 'Poder máximo',
+    unitInline: '(ya en esa unidad)',
+    powerPlaceholder: 'ej.: 12.5 PH/s',
+    powerBonusLabel: 'Bonificación de poder en % (opcional)',
+    powerBonusPlaceholder: 'ej.: 1079.68',
+    manualHint: 'Sin internet o solo para probar: escribe el valor directamente. La bonificación aparece en el resultado y ya entra en el simulador.',
+    maxPowerLabel: 'Poder máximo',
+    viewLeagues: 'Ver las 15 ligas',
+    growthTitle: 'Simular crecimiento',
+    growthSubtitle: 'Suma poder sobre tu total actual y mira si subes de liga.',
+    addPower: '+ añadir poder',
+    currentBonus: 'Bonificación actual',
+    extraBonus: '+ Bonificación adicional',
+    growthHint: 'Escribe solo la bonificación extra que esperas ganar con colecciones o eventos. El simulador aplica bonificación actual + adicional, y la bonificación adicional también aumenta el poder que ya tienes.',
+    currentPower: 'Poder actual',
+    addedPower: '+ Añadido',
+    gainPowerAndBonus: '+ Ganancia (poder + bonificación)',
+    addPowerValuePlaceholder: 'ej.: 50',
+    newTotal: 'Nuevo total',
+    rackTitle: 'Cálculo por rack',
+    rackSubtitle: 'Monta el rack actual y el rack final después del cambio. El lado Rack después debe representar el estado final completo del rack; usa copiar actual → después antes de añadir nuevas máquinas. Toca los huecos vacíos para colocar máquinas; ✕ las elimina. El simulador sigue la fórmula oficial: la bonificación del rack se suma de forma plana y no multiplica la bonificación de colección.',
+    rackType: 'Tipo de rack',
+    rackType3: '3 baldas · 6 espacios',
+    rackType4: '4 baldas · 8 espacios',
+    rackBonusLabel: 'Bonificación local del rack (%)',
+    rackBonusPlaceholder: 'ej.: 12',
+    rackCurrent: 'Rack actual',
+    rackAfter: 'Rack después',
+    rackCopy: 'copiar actual → después',
+    footer: 'RC Booom Calculator · poder, ligas y simulación de crecimiento · proyecto no oficial de fans, sin vínculo con RollerCoin.',
+    alertBadPower: 'No pude interpretar ese valor de poder. Prueba con algo como "12.5 PH/s".',
+    invalidNick: 'Introduce un nick o un enlace de perfil válido.',
+    proxyMissing: 'El proxy no está configurado. Publica worker.js y pega su URL en CONFIG.workerUrl. Mientras tanto, usa la pestaña Poder manual.',
+    fetchingProfile: 'Cargando "{slug}"...',
+    profileLoaded: 'Perfil "{nick}" cargado.',
+    connectionError: 'No se pudo conectar con el proxy. Inténtalo de nuevo.',
+    playerNotFound: 'Jugador no encontrado.',
+    proxyNoPower: 'El proxy no devolvió el valor de poder. Revisa worker.js.',
+    absoluteTop: '🏆 ¡Cima absoluta! Ya estás en Diamond III, la liga más alta.',
+    needForNext: 'Te faltan {needed} de poder para subir a {next} (meta: {goal}).',
+    bonusSuffix: 'de bonificación',
+    errorPrefix: 'Error:',
+    addPowerToSimulate: 'Añade poder arriba para simular el crecimiento.',
+    leagueJump: '🎉 Subes de {from} a {to}{extra}',
+    multiLeagueJump: ' — saltando {count} ligas!',
+    singleLeagueJump: '!',
+    maxLeagueAlready: 'Ya estás en la liga máxima (Diamond III).',
+    staysInLeague: 'Sigues en {league}. Te faltan {needed} para {next}.',
+    addMachine: '+ añadir máquina',
+    remove: 'eliminar',
+    addMachineTitle: 'Nueva máquina',
+    nameOrId: 'Nombre / ID',
+    rackPowerPlaceholder: 'Poder',
+    globalBonusPlaceholder: 'Bonificación global %',
+    oneCell: '1 celda',
+    twoCells: '2 celdas',
+    placeMachine: '✓ colocar',
+    cancel: '✕ cancelar',
+    emptySlot: 'espacio vacío',
+    addMachineSlot: 'añadir máquina',
+    currentRackSection: 'Rack actual',
+    rawMachinePower: 'Poder bruto de las máquinas',
+    rackPowerWithLocal: 'Poder del rack (con +{pct}% local)',
+    listedCollectionBonus: 'Bonificación de colección mostrada (info)',
+    afterRackSection: 'Rack después',
+    tradeDiffSection: 'Diferencia del cambio',
+    deltaRawPower: 'Δ poder bruto',
+    deltaRackBonus: 'Δ bonificación local del rack',
+    deltaListedCollection: 'Δ bonificación de colección mostrada',
+    collectionInfoHint: 'En RollerCoin, la bonificación de colección pertenece a la cuenta y no cambia solo por mover miners entre racks. Los valores de arriba quedan como referencia de las máquinas listadas.',
+    accountImpact: 'Impacto en la cuenta',
+    estimatedFinalPower: 'Poder final estimado',
+    currentLeague: 'Liga actual',
+    afterLeague: 'Liga después',
+    leagueLabel: 'Liga',
+    maxLeagueLabel: 'Diamond III (máxima)',
+    missingForLeague: 'Falta para {next}',
+    calcAccountHint: 'Calcula tu poder arriba primero (Por nick o Manual) para ver el impacto en la cuenta y en las ligas.',
+    invalidLayout: 'Diseño no válido en {which}: necesita {need} baldas, pero este tipo de rack solo tiene {shelves}. Ajusta los tamaños o cambia el tipo de rack.',
+    bothRacks: 'ambos racks',
+    currentRackOnly: 'el rack actual',
+    afterRackOnly: 'el rack después',
+    fillBothRacks: 'Coloca máquinas en ambos racks para compararlos.',
+    noChange: 'Actual y después son equivalentes: no hay cambios.',
+    infoOnlyCollectionDiff: 'El poder del rack no cambió. La diferencia de bonificación de colección mostrada es solo informativa.',
+    incompleteAfterRack: 'El rack después tiene menos poder que el rack actual. Si tu intención era sumar máquinas, copia primero el rack actual al rack después antes de editar.',
+    worseRawPower: 'Atención: este cambio empeora el poder bruto del rack.',
+    positiveTrade: 'Cambio positivo: + {power} bruto.',
+    qualityNormal: 'Normal',
+    qualityUncommon: 'Poco común',
+    qualityRare: 'Rara',
+    qualityEpic: 'Épica',
+    qualityLegendary: 'Legendaria',
+    qualityUnreal: 'Unreal',
+    tierBronze: 'Bronce',
+    tierSilver: 'Plata',
+    tierGold: 'Oro',
+    tierPlatinum: 'Platino',
+    tierDiamond: 'Diamante'
+  }
+};
+
+const UI = { lang: 'pt-BR' };
+
+function t(key, vars) {
+  const dict = I18N[UI.lang] || I18N['pt-BR'];
+  let text = dict[key] != null ? dict[key] : I18N['pt-BR'][key] || key;
+  if (vars) {
+    Object.keys(vars).forEach(function (name) {
+      text = text.replace(new RegExp('\\{' + name + '\\}', 'g'), vars[name]);
+    });
+  }
+  return text;
+}
+
+function formatPowerLocale(gh) {
+  if (gh == null || !isFinite(gh)) return '—';
+  const order = [['ZH',1e12],['EH',1e9],['PH',1e6],['TH',1e3],['GH',1]];
+  for (const pair of order) {
+    const label = pair[0], factor = pair[1];
+    if (gh >= factor || label === 'GH') {
+      const v = gh / factor;
+      const str = v.toLocaleString(UI.lang, { maximumFractionDigits: 3 });
+      return str + ' ' + label + '/s';
+    }
+  }
+  return gh + ' GH/s';
+}
+
+/* texto -> Gh/s (ou null). Aceita "12.5 PH/s", "3eh", "1,2 EH"... */
+function parsePower(input) {
+  if (input == null) return null;
+  let s = String(input).trim().toLowerCase();
+  if (!s) return null;
+  s = s.replace(',', '.');
+  const m = s.match(/^([0-9]*\.?[0-9]+)\s*(zh|eh|ph|th|gh)?(\/?s)?$/i);
+  if (!m) return null;
+  const value = parseFloat(m[1]);
+  if (!isFinite(value)) return null;
+  const unit = (m[2] || 'gh').toUpperCase();
+  return value * UNIT[unit];
+}
+
+/* Gh/s -> texto legível na melhor unidade */
+function formatPower(gh) {
+  return formatPowerLocale(gh);
+}
+
+/* Gh/s -> liga atual */
+function getLeague(gh) {
+  let current = LEAGUES[0];
+  for (const lg of LEAGUES) {
+    if (gh >= lg.min) current = lg;
+    else break;
+  }
+  return current;
+}
+
+/* Gh/s -> tudo que a UI precisa */
+function analyze(gh) {
+  const current = getLeague(gh);
+  const currentIndex = LEAGUES.findIndex(l => l.id === current.id);
+  const next = LEAGUES[currentIndex + 1] || null;
+  const rangeMin = current.min;
+  const rangeMax = next ? next.min : Infinity;
+  const needed = next ? Math.max(0, next.min - gh) : 0;
+  let progress = 1;
+  if (next) {
+    progress = (gh - rangeMin) / (rangeMax - rangeMin);
+    progress = Math.min(1, Math.max(0, progress));
+  }
+  return { power:gh, current, currentIndex, next, needed, progress,
+           rangeMin, rangeMax, isMaxLeague:!next };
+}
+
+/* veredito direto contra uma liga alvo */
+function compareToLeague(gh, targetLeagueId) {
+  const target = LEAGUES.find(l => l.id === targetLeagueId);
+  if (!target) return null;
+  return { target, reaches: gh >= target.min, missing: Math.max(0, target.min - gh) };
+}
+</script>
+
+<!-- ============================================================
+     INTERFACE  (era js/app.js — agora embutido)
+     ============================================================ -->
+<script>
+/* ---- CONFIG ----
+ * A aba "Por Nick" usa um proxy (Cloudflare Worker). Ele é NECESSÁRIO:
+ * a API do RollerCoin manda um header CORS inválido que o navegador
+ * rejeita, então o navegador não consegue chamá-la direto. O Worker
+ * busca os dados server-side e os reentrega com CORS limpo.
+ * Código e instruções de deploy: ver o arquivo worker.js.
+ *
+ * Depois de publicar o Worker, cole a URL dele aqui.
+ *   Ex.: 'https://rlc-proxy.seu-usuario.workers.dev'
+ * Vazio = aba "Por Nick" mostra aviso; aba "Manual" funciona normal. */
+const CONFIG = {
+  workerUrl:  'https://rollercoin-calculator.igorborbaescobar.workers.dev',
+  cacheTtlMs: 5 * 60 * 1000,      // não re-busca o mesmo nick por 5 min
+};
+
+/* cache em memória — zera quando a página recarrega */
+const _rcCache = new Map();
+
+/* estado: guarda o poder base atual (vindo da aba manual ou do nick).
+ * O simulador soma adições por cima desse valor. */
+const state = { basePower: null, bonusPct: 0, raw: null, lastAnalysis: null, lastMeta: null };
+
+const $ = (sel) => document.querySelector(sel);
+
+function qualityLabel(q) {
+  return ({
+    Normal: t('qualityNormal'),
+    Uncommon: t('qualityUncommon'),
+    Rare: t('qualityRare'),
+    Epic: t('qualityEpic'),
+    Legendary: t('qualityLegendary'),
+    Unreal: t('qualityUnreal')
+  })[q] || q;
+}
+
+function leagueName(lg) {
+  if (!lg) return '—';
+  const parts = String(lg.name).split(' ');
+  const roman = parts.pop();
+  const base = parts.join(' ');
+  const map = {
+    Bronze: t('tierBronze'),
+    Silver: t('tierSilver'),
+    Gold: t('tierGold'),
+    Platinum: t('tierPlatinum'),
+    Diamond: t('tierDiamond')
+  };
+  return (map[base] || base) + ' ' + roman;
+}
+
+function applyStaticI18n() {
+  document.documentElement.lang = t('htmlLang');
+  document.title = t('title');
+  const meta = document.querySelector('meta[name="description"]');
+  if (meta) meta.setAttribute('content', t('metaDescription'));
+  $('.lang-picker').setAttribute('aria-label', t('languageSelector'));
+  $('#test-badge').textContent = t('testBadge');
+  $('.hd-sub').textContent = t('headerSubtitle');
+  $('.tab[data-mode="nick"]').textContent = t('tabNick');
+  $('.tab[data-mode="manual"]').textContent = t('tabManual');
+  $('label[for="nick"]').textContent = t('nickLabel');
+  $('#nick').placeholder = t('nickPlaceholder');
+  $('#btn-fetch').textContent = t('calculate');
+  $('#nick-hint').textContent = t('nickHint');
+  $('label[for="power"]').textContent = t('powerLabel');
+  $('#power').placeholder = t('powerPlaceholder');
+  $('#unit option[value=""]').textContent = t('unitInline');
+  $('#btn-manual').textContent = t('calculate');
+  $('label[for="power-bonus"]').textContent = t('powerBonusLabel');
+  $('#power-bonus').placeholder = t('powerBonusPlaceholder');
+  document.querySelectorAll('.hint')[1].textContent = t('manualHint');
+  $('.rp-label').textContent = t('maxPowerLabel');
+  $('.leagues-box summary').textContent = t('viewLeagues');
+  $('#sim .sim-title').textContent = t('growthTitle');
+  $('#sim .sim-sub').textContent = t('growthSubtitle');
+  $('#btn-add-row').textContent = t('addPower');
+  document.querySelectorAll('.sim-bonus-lbl')[0].textContent = t('currentBonus');
+  document.querySelectorAll('.sim-bonus-lbl')[1].textContent = t('extraBonus');
+  document.querySelector('#sim .sim-bonus-hint').innerHTML = t('growthHint');
+  document.querySelector('#sim .sim-line-lbl').textContent = t('currentPower');
+  document.getElementById('sim-added-lbl').textContent = t('addedPower');
+  document.querySelector('#sim .sim-line.total .sim-line-lbl').textContent = t('newTotal');
+  document.querySelector('#rack .sim-title').textContent = t('rackTitle');
+  document.querySelectorAll('#rack .sim-sub')[0].innerHTML = t('rackSubtitle');
+  document.querySelector('#rack .lbl').textContent = t('rackType');
+  document.querySelectorAll('#rack-types .rack-type')[0].textContent = t('rackType3');
+  document.querySelectorAll('#rack-types .rack-type')[1].textContent = t('rackType4');
+  $('label[for="rack-bonus"]').textContent = t('rackBonusLabel');
+  $('#rack-bonus').placeholder = t('rackBonusPlaceholder');
+  document.querySelector('.rack-side-h span').textContent = t('rackCurrent');
+  document.querySelectorAll('.rack-side-h span')[1].textContent = t('rackAfter');
+  document.querySelector('.rack-copy[data-copy="depois"]').textContent = t('rackCopy');
+  $('.ft p').textContent = t('footer');
+  document.querySelectorAll('.lang-btn').forEach(function (btn) {
+    btn.classList.toggle('is-active', btn.dataset.lang === UI.lang);
+  });
+  document.querySelectorAll('.add-row').forEach(function (row) {
+    row.querySelector('.add-val').placeholder = t('addPowerValuePlaceholder');
+    row.querySelector('.row-x').title = t('remove');
+  });
+}
+
+function setLanguage(lang) {
+  if (!I18N[lang]) return;
+  UI.lang = lang;
+  applyStaticI18n();
+  if (state.lastAnalysis) render(state.lastAnalysis, state.lastMeta);
+  else recalcSim();
+  if (window.recalcRackUI) window.recalcRackUI();
+}
+
+document.querySelectorAll('.lang-btn').forEach(function (btn) {
+  btn.addEventListener('click', function () { setLanguage(btn.dataset.lang); });
+});
+
+/* 1) ABAS */
+document.querySelectorAll('.tab').forEach((tab) => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('is-active'));
+    tab.classList.add('is-active');
+    const mode = tab.dataset.mode;
+    document.querySelectorAll('.pane').forEach(p => {
+      p.classList.toggle('is-hidden', p.dataset.pane !== mode);
+    });
+  });
+});
+
+/* 2) MODO MANUAL (offline) */
+$('#btn-manual').addEventListener('click', () => {
+  const raw  = $('#power').value;
+  const unit = $('#unit').value;
+  const text = unit ? (raw + ' ' + unit) : raw;
+  const gh = parsePower(text);
+  if (gh == null) {
+    return alert(t('alertBadPower'));
+  }
+  const bp = parseFloat(($('#power-bonus').value || '').replace(',', '.'));
+  render(analyze(gh), {
+    source: 'manual',
+    bonusPct: isFinite(bp) ? bp : 0,
+  });
+});
+$('#power').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') $('#btn-manual').click();
+});
+$('#power-bonus').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') $('#btn-manual').click();
+});
+
+/* 3) MODO NICK / LINK (via proxy / Cloudflare Worker) */
+function extractSlug(input) {
+  let s = String(input || '').trim();
+  if (!s) return null;
+  const m = s.match(/rollercoin\.com\/p\/([^/?#\s]+)/i);
+  if (m) return m[1];
+  return s.replace(/[^\w.\-]/g, '');
+}
+
+$('#btn-fetch').addEventListener('click', fetchByNick);
+$('#nick').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') fetchByNick();
+});
+
+/* chama o Worker, que por sua vez fala com o RollerCoin.
+ * Contrato: GET <workerUrl>/?nick=<slug>
+ *   -> { ok:true, nick, powerGh, raw }  |  { ok:false, error }
+ * powerGh já vem em Gh/s (base interna do site) — entra direto. */
+async function fetchPlayer(slug) {
+  const key = slug.toLowerCase();
+  const hit = _rcCache.get(key);
+  if (hit && Date.now() - hit.t < CONFIG.cacheTtlMs) return hit.data;
+
+  let data;
+  try {
+    const res = await fetch(
+      CONFIG.workerUrl + '/?nick=' + encodeURIComponent(slug));
+    data = await res.json();
+  } catch {
+    throw new Error(t('connectionError'));
+  }
+  if (!data || !data.ok) {
+    throw new Error((data && data.error) || t('playerNotFound'));
+  }
+  if (typeof data.powerGh !== 'number') {
+    throw new Error(t('proxyNoPower'));
+  }
+
+  _rcCache.set(key, { t: Date.now(), data });
+  return data;
+}
+
+async function fetchByNick() {
+  const hint = $('#nick-hint');
+  const btn  = $('#btn-fetch');
+  const slug = extractSlug($('#nick').value);
+  hint.classList.remove('is-error');
+
+  if (!slug) {
+    hint.textContent = t('invalidNick');
+    hint.classList.add('is-error');
+    return;
+  }
+  if (!CONFIG.workerUrl) {
+    hint.textContent = t('proxyMissing');
+    hint.classList.add('is-error');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '...';
+  hint.textContent = t('fetchingProfile', { slug: slug });
+
+  try {
+    const data = await fetchPlayer(slug);
+    hint.textContent = t('profileLoaded', { nick: data.nick });
+    render(analyze(data.powerGh), { source: 'nick', nick: data.nick, raw: data.raw });
+  } catch (err) {
+    hint.textContent = t('errorPrefix') + ' ' + err.message;
+    hint.classList.add('is-error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = t('calculate');
+  }
+}
+
+/* 4) RENDER */
+function render(a, meta) {
+  $('#result').classList.remove('is-hidden');
+
+  $('#badge-tier').textContent = t('tier' + a.current.tier);
+  $('#badge-name').textContent = leagueName(a.current);
+  const tierColor = getComputedStyle(document.body)
+    .getPropertyValue('--tier-' + a.current.tier).trim();
+  $('#league-badge').style.borderLeftColor = tierColor || 'var(--cyan)';
+  $('#badge-tier').style.color = tierColor || 'var(--cyan)';
+
+  $('#rp-value').textContent = formatPower(a.power);
+
+  $('#prog-fill').style.width = (a.progress * 100).toFixed(1) + '%';
+  $('#prog-min').textContent = formatPower(a.rangeMin);
+  $('#prog-max').textContent = a.isMaxLeague ? '∞' : formatPower(a.rangeMax);
+
+  state.lastAnalysis = a;
+  state.lastMeta = meta || null;
+
+  const v = $('#verdict');
+  v.classList.remove('ok', 'climb');
+  if (a.isMaxLeague) {
+    v.classList.add('ok');
+    v.textContent = t('absoluteTop');
+  } else {
+    v.classList.add('climb');
+    v.textContent = t('needForNext', {
+      next: leagueName(a.next),
+      needed: formatPower(a.needed),
+      goal: formatPower(a.next.min)
+    });
+  }
+
+  const table = $('#leagues-table');
+  table.innerHTML = '';
+  LEAGUES.forEach((lg, i) => {
+    const next = LEAGUES[i + 1];
+    const range = next
+      ? formatPower(lg.min) + ' – ' + formatPower(next.min)
+      : formatPower(lg.min) + ' +';
+    const color = getComputedStyle(document.body)
+      .getPropertyValue('--tier-' + lg.tier).trim();
+    const tr = document.createElement('tr');
+    if (i === a.currentIndex) tr.className = 'is-current';
+    tr.innerHTML =
+      '<td><span class="lt-dot" style="background:' + color + '"></span>' + leagueName(lg) + '</td>' +
+      '<td>' + range + '</td>';
+    table.appendChild(tr);
+  });
+
+  $('#result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // alimenta o simulador com o novo poder base
+  state.basePower = a.power;
+
+  // bônus em %: na aba "Por Nick" vem da API (bonus_percent, em centésimos
+  // de %: 107968 -> 1079,68%); na aba manual vem do campo "Bônus de poder".
+  // É o valor oficial do RollerCoin. Aparece junto do poder máximo e vira
+  // o "bônus atual" do simulador (state.bonusPct).
+  let bonusPct = 0;
+  if (meta && meta.raw) {
+    const bp = meta.raw.bonus_percent;
+    bonusPct = typeof bp === 'number' ? bp / 100 : 0;
+  } else if (meta && typeof meta.bonusPct === 'number' && isFinite(meta.bonusPct)) {
+    bonusPct = meta.bonusPct;
+  }
+  state.bonusPct = bonusPct;
+  state.raw = (meta && meta.raw) ? meta.raw : null;
+
+  const rpBonus = $('#rp-bonus');
+  const pctTxt  = +bonusPct.toFixed(2);   // 2 casas, sem zeros à toa
+  if (bonusPct > 0) {
+    rpBonus.textContent = '+' + pctTxt + '% ' + t('bonusSuffix');
+    rpBonus.classList.remove('is-hidden');
+  } else {
+    rpBonus.classList.add('is-hidden');
+  }
+  $('#sim-bonus-cur').textContent = '+' + pctTxt + '%';
+
+  $('#sim').classList.remove('is-hidden');
+  recalcSim();
+}
+
+/* ============================================================
+ * 5) SIMULADOR DE CRESCIMENTO
+ * Lista de adições: 1 linha = adição simples, N linhas = empilhado.
+ * Recalcula ao vivo conforme o usuário digita.
+ * ========================================================== */
+
+const UNIT_OPTIONS =
+  '<option value="GH">GH/s</option>' +
+  '<option value="TH">TH/s</option>' +
+  '<option value="PH" selected>PH/s</option>' +
+  '<option value="EH">EH/s</option>' +
+  '<option value="ZH">ZH/s</option>';
+
+/* cria uma linha de adição e liga os eventos */
+function addRow() {
+  const row = document.createElement('div');
+  row.className = 'add-row';
+  row.innerHTML =
+    '<input type="text" class="add-val" inputmode="decimal" autocomplete="off" placeholder="' + t('addPowerValuePlaceholder') + '" />' +
+    '<select class="add-unit">' + UNIT_OPTIONS + '</select>' +
+    '<button class="row-x" type="button" title="' + t('remove') + '">&times;</button>';
+
+  $('#add-rows').appendChild(row);
+
+  row.querySelector('.add-val').addEventListener('input', recalcSim);
+  row.querySelector('.add-unit').addEventListener('change', recalcSim);
+  row.querySelector('.row-x').addEventListener('click', () => {
+    row.remove();
+    // nunca deixa a lista vazia: garante pelo menos uma linha
+    if (!$('#add-rows').children.length) addRow();
+    recalcSim();
+  });
+}
+
+/* soma o poder de todas as linhas (em Gh/s); linhas vazias/inválidas = 0 */
+function sumAdditions() {
+  let total = 0;
+  document.querySelectorAll('.add-row').forEach((row) => {
+    const val  = row.querySelector('.add-val').value;
+    const unit = row.querySelector('.add-unit').value;
+    if (!val.trim()) return;
+    const gh = parsePower(val + ' ' + unit);
+    if (gh != null) total += gh;
+  });
+  return total;
+}
+
+/* recalcula a simulação e atualiza a tela */
+function recalcSim() {
+  if (state.basePower == null) return;
+
+  const base     = state.basePower;
+  const rawAdded = sumAdditions();
+
+  // BÔNUS — modelo: poder = hardware * (1 + bônus).
+  // "curBonus" já está embutido no poder atual; "addBonus" é o bônus extra
+  // que o jogador planeja ganhar — ele aumenta tanto o poder adicionado
+  // quanto o poder atual. Com addBonus = 0, o total volta a ser exatamente
+  // poder atual + (hardware novo * (1 + bônus atual)).
+  const curBonus = state.bonusPct || 0;
+  const addIn    = parseFloat(($('#sim-bonus-add').value || '0').replace(',', '.'));
+  const addBonus = (isFinite(addIn) && addIn > 0) ? addIn : 0;
+  const curRatio = curBonus / 100;
+  const effRatio = (curBonus + addBonus) / 100;
+
+  const hardware = base / (1 + curRatio);          // hardware implícito (sem bônus)
+  const total    = (hardware + rawAdded) * (1 + effRatio);
+  const added    = total - base;                   // ganho total de poder
+
+  const baseA = analyze(base);
+  const newA  = analyze(total);
+
+  $('#sim-base').textContent      = formatPower(base);
+  $('#sim-added').textContent     = (added > 0 ? '+ ' : '') + formatPower(added);
+  $('#sim-added-lbl').textContent = addBonus > 0 ? t('gainPowerAndBonus') : t('addedPower');
+  $('#sim-total').textContent = formatPower(total);
+
+  // etiquetas de liga: base -> nova
+  const cBase = getComputedStyle(document.body)
+    .getPropertyValue('--tier-' + baseA.current.tier).trim();
+  const cNew = getComputedStyle(document.body)
+    .getPropertyValue('--tier-' + newA.current.tier).trim();
+  const tBase = $('#sim-tag-base');
+  const tNew  = $('#sim-tag-new');
+  tBase.textContent = leagueName(baseA.current);
+  tBase.style.color = cBase;
+  tNew.textContent = leagueName(newA.current);
+  tNew.style.color = cNew;
+
+  // barra de progresso do novo total
+  $('#sim-prog-fill').style.width = (newA.progress * 100).toFixed(1) + '%';
+  $('#sim-prog-min').textContent = formatPower(newA.rangeMin);
+  $('#sim-prog-max').textContent = newA.isMaxLeague ? '∞' : formatPower(newA.rangeMax);
+
+  // veredito
+  const v = $('#sim-verdict');
+  v.classList.remove('ok', 'climb');
+  if (added <= 0) {
+    v.textContent = t('addPowerToSimulate');
+  } else if (newA.currentIndex > baseA.currentIndex) {
+    const jumps = newA.currentIndex - baseA.currentIndex;
+    v.classList.add('ok');
+    v.textContent = t('leagueJump', {
+      from: leagueName(baseA.current),
+      to: leagueName(newA.current),
+      extra: jumps > 1 ? t('multiLeagueJump', { count: jumps }) : t('singleLeagueJump')
+    });
+  } else {
+    v.classList.add('climb');
+    if (newA.isMaxLeague) {
+      v.textContent = t('maxLeagueAlready');
+    } else {
+      v.textContent = t('staysInLeague', {
+        league: leagueName(newA.current),
+        needed: formatPower(newA.next.min - total),
+        next: leagueName(newA.next)
+      });
+    }
+  }
+}
+
+$('#btn-add-row').addEventListener('click', addRow);
+$('#sim-bonus-add').addEventListener('input', recalcSim);
+
+// começa com uma linha pronta (o simulador fica escondido até haver base)
+addRow();
+
+</script>
+<script>
+/* Cálculo por rack */
+(function () {
+  const QUALITIES = ['Normal', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Unreal'];
+  const QCOLOR = {
+    Normal: '#9aa7b6', Uncommon: '#3ddc84', Rare: '#5aa9ff',
+    Epic: '#b07cff', Legendary: '#ffce4a', Unreal: 'darkred'
+  };
+  const QTEXT = {
+    Normal: '#06121a', Uncommon: '#173404', Rare: '#042c53',
+    Epic: '#26215c', Legendary: '#412402', Unreal: '#4b1528'
+  };
+  const uOpts = '<option value="GH">GH/s</option><option value="TH">TH/s</option>' +
+    '<option value="PH" selected>PH/s</option><option value="EH">EH/s</option>' +
+    '<option value="ZH">ZH/s</option>';
+
+  let shelves = 3;
+  const data = { atual: [], depois: [] };
+
+  function cloneRack(list) {
+    return list.map(function (m) { return Object.assign({}, m); });
+  }
+
+  function copyAtualToDepois() {
+    data.depois = cloneRack(data.atual);
+    renderRack('depois');
+    recalcRack();
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function packShelves(list) {
+    const rows = [];
+    list.filter(function (m) { return m.size === 2; }).forEach(function (m) { rows.push([m]); });
+    const sm = list.filter(function (m) { return m.size !== 2; });
+    for (let i = 0; i < sm.length; i += 2) rows.push(sm.slice(i, i + 2));
+    return rows;
+  }
+
+  function validate(list) {
+    let big = 0, small = 0;
+    list.forEach(function (m) { if (m.size === 2) big++; else small++; });
+    const need = big + Math.ceil(small / 2);
+    return { ok: need <= shelves, need: need };
+  }
+
+  function uniqueGlobal(list) {
+    const seen = {};
+    let total = 0;
+    list.forEach(function (m) {
+      if (m.name) {
+        const k = m.name.toLowerCase() + '|' + m.quality;
+        if (seen[k]) return;
+        seen[k] = 1;
+      }
+      total += m.gbonus;
+    });
+    return total;
+  }
+
+  function machineCardHTML(m, idx) {
+    const bg = QCOLOR[m.quality] || '#9aa7b6';
+    const tx = QTEXT[m.quality] || '#06121a';
+    return '<div class="rack-mch s' + m.size + '" style="background:' + bg + ';color:' + tx + '">' +
+      '<button class="rack-mch-x" data-i="' + idx + '" title="' + t('remove') + '">×</button>' +
+      '<span class="rmn">' + esc(m.name || qualityLabel(m.quality)) + '</span>' +
+      '<span class="rmp">' + formatPower(m.powerGh) + '</span>' +
+    '</div>';
+  }
+
+  function addSlotHTML() {
+    return '<div class="rack-slot rack-slot-add" title="' + t('addMachineSlot') + '">' +
+      '<span class="rs-plus">+</span><span>' + t('emptySlot') + '</span></div>';
+  }
+
+  function renderRack(side) {
+    const unit = document.querySelector('.rack-unit[data-rack="' + side + '"]');
+    const list = data[side];
+    const v = validate(list);
+    const packed = packShelves(list);
+    const nRows = Math.max(shelves, packed.length);
+    let html = '<div class="rack-shelves' + (v.ok ? '' : ' invalid') + '">';
+    for (let r = 0; r < nRows; r++) {
+      html += '<div class="rack-shelf">';
+      const row = packed[r];
+      if (!row) {
+        html += addSlotHTML() + addSlotHTML();
+      } else {
+        let used = 0;
+        row.forEach(function (m) {
+          used += m.size;
+          html += machineCardHTML(m, list.indexOf(m));
+        });
+        if (used < 2) html += addSlotHTML();
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+    html += '<div class="rack-add-zone"><button class="rack-add-btn" type="button">' + t('addMachine') + '</button></div>';
+    unit.innerHTML = html;
+
+    unit.querySelectorAll('.rack-slot-add').forEach(function (s) {
+      s.addEventListener('click', function () { openEditor(side); });
+    });
+    unit.querySelector('.rack-add-btn').addEventListener('click', function () { openEditor(side); });
+    unit.querySelectorAll('.rack-mch-x').forEach(function (b) {
+      b.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const i = +b.dataset.i;
+        data[side].splice(i, 1);
+        renderRack(side); recalcRack();
+      });
+    });
+  }
+
+  function editorHTML() {
+    const dots = QUALITIES.map(function (q) {
+      return '<button class="re-dot" type="button" data-q="' + q + '" title="' + qualityLabel(q) + '" style="background:' + QCOLOR[q] + '"></button>';
+    }).join('');
+    return '<div class="rack-editor">' +
+      '<div class="re-title">' + t('addMachineTitle') + '</div>' +
+      '<input class="re-name" type="text" placeholder="' + t('nameOrId') + '" autocomplete="off" />' +
+      '<div class="re-dots">' + dots + '</div>' +
+      '<div class="re-row">' +
+        '<input class="re-power" type="text" inputmode="decimal" placeholder="' + t('rackPowerPlaceholder') + '" autocomplete="off" />' +
+        '<select class="re-unit">' + uOpts + '</select>' +
+      '</div>' +
+      '<input class="re-gbonus" type="text" inputmode="decimal" placeholder="' + t('globalBonusPlaceholder') + '" autocomplete="off" />' +
+      '<div class="re-size">' +
+        '<button class="re-sz is-active" type="button" data-s="1">' + t('oneCell') + '</button>' +
+        '<button class="re-sz" type="button" data-s="2">' + t('twoCells') + '</button>' +
+      '</div>' +
+      '<div class="re-actions">' +
+        '<button class="re-ok" type="button">' + t('placeMachine') + '</button>' +
+        '<button class="re-cancel" type="button">' + t('cancel') + '</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function openEditor(side) {
+    if (side === 'depois' && data.atual.length > 0 && data.depois.length === 0) {
+      data.depois = cloneRack(data.atual);
+      renderRack('depois');
+    }
+
+    const unit = document.querySelector('.rack-unit[data-rack="' + side + '"]');
+    const zone = unit.querySelector('.rack-add-zone');
+    zone.innerHTML = editorHTML();
+    const ed = zone.querySelector('.rack-editor');
+    const dEl = { quality: 'Normal', size: 1 };
+    ed.querySelector('.re-dot[data-q="Normal"]').classList.add('is-active');
+    ed.querySelectorAll('.re-dot').forEach(function (d) {
+      d.addEventListener('click', function () {
+        ed.querySelectorAll('.re-dot').forEach(function (x) { x.classList.remove('is-active'); });
+        d.classList.add('is-active');
+        dEl.quality = d.dataset.q;
+      });
+    });
+    ed.querySelectorAll('.re-sz').forEach(function (b) {
+      b.addEventListener('click', function () {
+        ed.querySelectorAll('.re-sz').forEach(function (x) { x.classList.remove('is-active'); });
+        b.classList.add('is-active');
+        dEl.size = +b.dataset.s;
+      });
+    });
+    ed.querySelector('.re-cancel').addEventListener('click', function () {
+      renderRack(side);
+    });
+    ed.querySelector('.re-ok').addEventListener('click', function () {
+      const name = ed.querySelector('.re-name').value.trim();
+      const powStr = ed.querySelector('.re-power').value;
+      const unitVal = ed.querySelector('.re-unit').value;
+      const gbStr = ed.querySelector('.re-gbonus').value;
+      const powerGh = parsePower(powStr + ' ' + unitVal) || 0;
+      const gb = parseFloat((gbStr || '0').replace(',', '.'));
+      data[side].push({
+        name: name,
+        quality: dEl.quality,
+        powerGh: powerGh,
+        gbonus: isFinite(gb) ? gb : 0,
+        size: dEl.size
+      });
+      if (side === 'atual' && data.depois.length === 0) {
+        data.depois = cloneRack(data.atual);
+        renderRack('depois');
+      }
+      renderRack(side);
+      recalcRack();
+    });
+    ed.querySelector('.re-name').focus();
+  }
+
+  function recalcRack() {
+    const R = parseFloat((document.getElementById('rack-bonus').value || '0').replace(',', '.')) || 0;
+    const rr = R / 100;
+
+    const A = data.atual, D = data.depois;
+    const rawA = A.reduce(function (s, m) { return s + m.powerGh; }, 0);
+    const rawD = D.reduce(function (s, m) { return s + m.powerGh; }, 0);
+    const rackPowA = rawA * (1 + rr);
+    const rackPowD = rawD * (1 + rr);
+    const gA = uniqueGlobal(A);
+    const gD = uniqueGlobal(D);
+    const deltaRaw = rawD - rawA;
+    const deltaG = gD - gA;
+    const rackBonusA = rawA * rr;
+    const rackBonusD = rawD * rr;
+    const deltaRackBonus = rackBonusD - rackBonusA;
+
+    const vA = validate(A), vD = validate(D);
+
+    const fp = formatPower;
+    const pct = function (x) { return (x >= 0 ? '+' : '') + (+x.toFixed(2)) + '%'; };
+    const sig = function (x) { return (x >= 0 ? '+ ' : '− ') + fp(Math.abs(x)); };
+    const L = function (l, val, cls) {
+      return '<div class="sim-line"><span class="sim-line-lbl">' + l +
+        '</span><span class="sim-line-val ' + (cls || '') + '">' + val + '</span></div>';
+    };
+    const Rtxt = (+R.toFixed(2));
+
+    let h = '';
+    h += '<div class="rack-grp-title">' + t('currentRackSection') + '</div>';
+    h += L(t('rawMachinePower'), fp(rawA));
+    h += L(t('rackPowerWithLocal', { pct: Rtxt }), fp(rackPowA));
+    h += L(t('listedCollectionBonus'), pct(gA));
+    h += '<div class="rack-grp-title">' + t('afterRackSection') + '</div>';
+    h += L(t('rawMachinePower'), fp(rawD));
+    h += L(t('rackPowerWithLocal', { pct: Rtxt }), fp(rackPowD));
+    h += L(t('listedCollectionBonus'), pct(gD));
+    h += '<div class="rack-grp-title">' + t('tradeDiffSection') + '</div>';
+    h += L(t('deltaRawPower'), sig(deltaRaw), 'accent');
+    h += L(t('deltaRackBonus'), sig(deltaRackBonus));
+    h += L(t('deltaListedCollection'), pct(deltaG), 'accent');
+    h += '<p class="sim-bonus-hint" style="margin-top:8px">' + t('collectionInfoHint') + '</p>';
+
+    if (state.basePower != null) {
+      const G = state.bonusPct || 0;
+      const collDelta = deltaRaw * (1 + G / 100);
+      const rackDelta = deltaRaw * rr;
+      const deltaAccount = collDelta + rackDelta;
+      const finalPow = state.basePower + deltaAccount;
+      const bA = analyze(state.basePower);
+      const aA = analyze(finalPow);
+      h += '<div class="rack-grp-title">' + t('accountImpact') + '</div>';
+      h += L(t('estimatedFinalPower'), fp(finalPow), 'accent');
+      h += L(t('currentLeague'), leagueName(bA.current));
+      h += L(t('afterLeague'), leagueName(aA.current));
+      h += aA.isMaxLeague
+        ? L(t('leagueLabel'), t('maxLeagueLabel'))
+        : L(t('missingForLeague', { next: leagueName(aA.next) }), fp(Math.max(0, aA.next.min - finalPow)));
+    } else {
+      h += '<p class="sim-bonus-hint" style="margin-top:10px">' + t('calcAccountHint') + '</p>';
+    }
+
+    const maybeIncomplete = rawA > 0 && rawD > 0 && rawD < rawA;
+    let warn, wc;
+    if (!vA.ok || !vD.ok) {
+      const which = !vA.ok && !vD.ok ? t('bothRacks') : (!vA.ok ? t('currentRackOnly') : t('afterRackOnly'));
+      const need = !vD.ok ? vD.need : vA.need;
+      warn = t('invalidLayout', { which: which, need: need, shelves: shelves });
+      wc = 'climb';
+    } else if (rawA === 0 && rawD === 0) {
+      warn = t('fillBothRacks');
+      wc = 'climb';
+    } else if (deltaRaw === 0 && deltaG === 0) {
+      warn = t('noChange');
+      wc = 'climb';
+    } else if (deltaRaw === 0 && deltaG !== 0) {
+      warn = t('infoOnlyCollectionDiff');
+      wc = 'climb';
+    } else if (maybeIncomplete) {
+      warn = t('incompleteAfterRack');
+      wc = 'climb';
+    } else if (deltaRaw < 0) {
+      warn = t('worseRawPower');
+      wc = 'climb';
+    } else {
+      warn = t('positiveTrade', { power: fp(deltaRaw) });
+      wc = 'ok';
+    }
+    h += '<div class="verdict ' + wc + '" style="margin-top:12px">' + warn + '</div>';
+
+    document.getElementById('rack-result').innerHTML = h;
+  }
+
+  document.querySelectorAll('#rack-types .rack-type').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('#rack-types .rack-type').forEach(function (b) { b.classList.remove('is-active'); });
+      btn.classList.add('is-active');
+      shelves = parseInt(btn.dataset.shelves, 10);
+      renderRack('atual'); renderRack('depois'); recalcRack();
+    });
+  });
+  document.getElementById('rack-bonus').addEventListener('input', recalcRack);
+  document.querySelector('.rack-copy[data-copy="depois"]').addEventListener('click', function () {
+    copyAtualToDepois();
+  });
+
+  window.recalcRackUI = recalcRack;
+  applyStaticI18n();
+  renderRack('atual');
+  renderRack('depois');
+  recalcRack();
+})();
+</script>
+</body>
+</html>

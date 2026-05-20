@@ -1,0 +1,242 @@
+/* ============================================================
+ * RLC Max Power — estilo "arcade cripto"
+ * Tema escuro, acento ciano (cor da marca do RollerCoin).
+ * ========================================================== */
+
+:root {
+  --bg:        #0a0e14;
+  --bg-grid:   #11161f;
+  --card:      #121823;
+  --card-2:    #0e131c;
+  --line:      #233040;
+  --txt:       #e6edf3;
+  --txt-dim:   #7d8da0;
+  --cyan:      #03e1e4;
+  --cyan-dim:  #0a8587;
+  --green:     #3ddc84;
+  --amber:     #ffb547;
+  --shadow:    0 14px 40px -12px rgba(0,0,0,.7);
+  --tier-Bronze:   #cd7f4d;
+  --tier-Silver:   #b7c2cf;
+  --tier-Gold:     #ffce4a;
+  --tier-Platinum: #6fe3d0;
+  --tier-Diamond:  #7cc6ff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Chakra Petch', sans-serif;
+  background:
+    radial-gradient(ellipse at 50% -10%, #16202e 0%, transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
+  color: var(--txt);
+  min-height: 100vh;
+  padding: 32px 18px 60px;
+  /* leve grid de fundo, estilo placa de circuito */
+  background-image:
+    linear-gradient(var(--bg-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* linha de varredura sutil no topo, vibe CRT */
+.scanline {
+  position: fixed; inset: 0; pointer-events: none; z-index: 50;
+  background: repeating-linear-gradient(
+    to bottom, transparent 0 3px, rgba(0,0,0,.12) 3px 4px);
+  mix-blend-mode: overlay;
+}
+
+.wrap { max-width: 540px; margin: 0 auto; }
+
+/* ===== Cabeçalho ===== */
+.hd { text-align: center; margin-bottom: 26px; }
+.hd-mark {
+  font-size: 30px; line-height: 1;
+  filter: drop-shadow(0 0 10px var(--cyan));
+}
+.hd h1 {
+  font-size: 30px; font-weight: 700; letter-spacing: 2px;
+  margin-top: 6px;
+}
+.hd h1 span { color: var(--cyan); text-shadow: 0 0 18px var(--cyan-dim); }
+.hd-sub {
+  color: var(--txt-dim); font-size: 13px; margin-top: 4px;
+  letter-spacing: .5px;
+}
+
+/* ===== Cards ===== */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+  margin-bottom: 18px;
+}
+
+/* ===== Abas ===== */
+.tabs {
+  display: flex; gap: 6px;
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  border-radius: 10px; padding: 4px;
+  margin-bottom: 18px;
+}
+.tab {
+  flex: 1; padding: 9px 8px;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  letter-spacing: .4px;
+  color: var(--txt-dim);
+  background: transparent; border: 0; border-radius: 7px;
+  cursor: pointer; transition: all .15s ease;
+}
+.tab.is-active {
+  color: var(--bg); background: var(--cyan);
+  box-shadow: 0 0 16px -2px var(--cyan-dim);
+}
+
+/* ===== Painéis de entrada ===== */
+.pane.is-hidden { display: none; }
+.lbl {
+  display: block; font-size: 12px; font-weight: 600;
+  color: var(--txt-dim); letter-spacing: .6px;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.field { display: flex; gap: 8px; }
+.field input[type=text] {
+  flex: 1; min-width: 0;
+  font-family: 'JetBrains Mono', monospace; font-size: 14px;
+  color: var(--txt);
+  background: var(--card-2);
+  border: 1px solid var(--line); border-radius: 9px;
+  padding: 11px 13px;
+  transition: border-color .15s ease;
+}
+.field input[type=text]:focus {
+  outline: none; border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(3,225,228,.12);
+}
+.field input::placeholder { color: #495568; }
+
+.unit {
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  color: var(--txt);
+  background: var(--card-2);
+  border: 1px solid var(--line); border-radius: 9px;
+  padding: 0 8px; cursor: pointer;
+}
+
+.btn {
+  font-family: inherit; font-size: 13px; font-weight: 700;
+  letter-spacing: .6px;
+  color: var(--bg);
+  background: var(--cyan);
+  border: 0; border-radius: 9px;
+  padding: 11px 18px; cursor: pointer; white-space: nowrap;
+  transition: transform .1s ease, box-shadow .15s ease;
+  box-shadow: 0 0 18px -4px var(--cyan-dim);
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn:disabled { opacity: .5; cursor: progress; transform: none; }
+
+.hint { font-size: 12px; color: var(--txt-dim); margin-top: 10px; }
+.hint.is-error { color: var(--amber); }
+
+/* ===== Resultado ===== */
+.result.is-hidden { display: none; }
+.result-top {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 14px; margin-bottom: 18px;
+}
+.badge {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 10px 16px;
+  border: 1px solid var(--line); border-radius: 10px;
+  background: var(--card-2);
+  border-left: 3px solid var(--cyan);
+}
+.badge-tier {
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.badge-name { font-size: 18px; font-weight: 700; }
+
+.result-power { text-align: right; }
+.rp-label {
+  display: block; font-size: 11px; color: var(--txt-dim);
+  text-transform: uppercase; letter-spacing: .8px;
+}
+.rp-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 20px; font-weight: 700; color: var(--cyan);
+}
+
+/* barra de progresso */
+.prog { margin-bottom: 16px; }
+.prog-bar {
+  height: 12px; border-radius: 6px;
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--cyan-dim), var(--cyan));
+  box-shadow: 0 0 12px var(--cyan-dim);
+  transition: width .6s cubic-bezier(.2,.7,.3,1);
+}
+.prog-ends {
+  display: flex; justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--txt-dim); margin-top: 6px;
+}
+
+/* veredito */
+.verdict {
+  font-size: 14px; font-weight: 600; line-height: 1.5;
+  padding: 13px 15px; border-radius: 10px;
+  background: var(--card-2);
+  border: 1px solid var(--line);
+}
+.verdict.ok    { border-color: var(--green); color: var(--green); }
+.verdict.climb { border-color: var(--amber); color: var(--amber); }
+
+/* tabela das ligas */
+.leagues-box { margin-top: 16px; }
+.leagues-box summary {
+  cursor: pointer; font-size: 13px; font-weight: 600;
+  color: var(--cyan); padding: 4px 0;
+}
+.leagues-table {
+  width: 100%; border-collapse: collapse; margin-top: 10px;
+  font-size: 12.5px;
+}
+.leagues-table td {
+  padding: 7px 8px; border-bottom: 1px solid var(--line);
+}
+.leagues-table td:last-child {
+  text-align: right; font-family: 'JetBrains Mono', monospace;
+  color: var(--txt-dim);
+}
+.leagues-table tr.is-current td {
+  background: rgba(3,225,228,.08);
+  color: var(--cyan); font-weight: 700;
+}
+.leagues-table tr.is-current td:last-child { color: var(--cyan); }
+.lt-dot {
+  display: inline-block; width: 8px; height: 8px;
+  border-radius: 50%; margin-right: 8px; vertical-align: middle;
+}
+
+/* ===== Rodapé ===== */
+.ft { text-align: center; margin-top: 28px; }
+.ft p { font-size: 11px; color: var(--txt-dim); }
+
+@media (max-width: 460px) {
+  .result-top { flex-direction: column; align-items: flex-start; }
+  .result-power { text-align: left; }
+}
