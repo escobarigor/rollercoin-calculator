@@ -275,6 +275,21 @@ body {
   .test-badge { text-align: center; }
 }
 /* ---- Cálculo por rack ---- */
+@media (max-width: 560px) {
+  .rack-side-h {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+  }
+  .rack-h-action {
+    min-width: 0;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .rack-copy {
+    white-space: normal;
+    width: 100%;
+  }
+}
 .rack-types { display: flex; gap: 8px; }
 .rack-type {
   flex: 1; font-family: inherit; font-size: 12px; font-weight: 600;
@@ -282,23 +297,28 @@ body {
   border-radius: 9px; padding: 10px 6px; cursor: pointer; transition: all .15s ease;
 }
 .rack-type.is-active { color: var(--bg); background: var(--cyan); border-color: var(--cyan); }
-.racks-pair { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
-.rack-side { flex: 1; min-width: 200px; }
+.racks-pair { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; align-items: stretch; }
+.rack-side { flex: 1; min-width: 200px; display: flex; flex-direction: column; }
 .rack-side-h {
   font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px;
   color: var(--txt-dim); margin-bottom: 6px;
-  display: flex; justify-content: space-between; align-items: center; gap: 6px;
+  display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 6px;
+  min-height: 28px;
 }
+.rack-h-title { min-width: 0; }
+.rack-h-action { min-width: 118px; display: flex; justify-content: flex-end; }
 .rack-copy {
   font-family: inherit; font-size: 10px; font-weight: 600; color: var(--cyan);
   background: transparent; border: 1px solid var(--cyan-dim); border-radius: 6px;
   padding: 3px 8px; cursor: pointer; text-transform: none; letter-spacing: 0;
+  white-space: nowrap;
 }
 .rack-copy:hover { background: rgba(3,225,228,.08); }
 .rack-unit {
   border: 1px solid var(--line); border-radius: 10px; background: var(--card-2); padding: 7px;
+  flex: 1; display: flex; flex-direction: column;
 }
-.rack-shelves { display: flex; flex-direction: column; gap: 5px; }
+.rack-shelves { display: flex; flex-direction: column; gap: 5px; flex: 1; }
 .rack-shelves.invalid { outline: 1px solid var(--amber); outline-offset: 3px; border-radius: 8px; }
 .rack-shelf { display: flex; gap: 5px; min-height: 52px; }
 .rack-slot {
@@ -548,13 +568,18 @@ body {
 
     <div class="racks-pair">
       <div class="rack-side">
-        <div class="rack-side-h"><span>Rack atual</span></div>
+        <div class="rack-side-h">
+          <span class="rack-h-title" data-rack-label="current">Rack atual</span>
+          <span class="rack-h-action" aria-hidden="true"></span>
+        </div>
         <div class="rack-unit" data-rack="atual"></div>
       </div>
       <div class="rack-side">
         <div class="rack-side-h">
-          <span>Rack depois</span>
-          <button class="rack-copy" type="button" data-copy="depois">copiar atual → depois</button>
+          <span class="rack-h-title" data-rack-label="after">Rack depois</span>
+          <span class="rack-h-action">
+            <button class="rack-copy" type="button" data-copy="depois">copiar atual → depois</button>
+          </span>
         </div>
         <div class="rack-unit" data-rack="depois"></div>
       </div>
@@ -1009,12 +1034,6 @@ function analyze(gh) {
            rangeMin, rangeMax, isMaxLeague:!next };
 }
 
-/* veredito direto contra uma liga alvo */
-function compareToLeague(gh, targetLeagueId) {
-  const target = LEAGUES.find(l => l.id === targetLeagueId);
-  if (!target) return null;
-  return { target, reaches: gh >= target.min, missing: Math.max(0, target.min - gh) };
-}
 </script>
 
 <!-- ============================================================
@@ -1110,8 +1129,8 @@ function applyStaticI18n() {
   document.querySelectorAll('#rack-types .rack-type')[1].textContent = t('rackType4');
   $('label[for="rack-bonus"]').textContent = t('rackBonusLabel');
   $('#rack-bonus').placeholder = t('rackBonusPlaceholder');
-  document.querySelector('.rack-side-h span').textContent = t('rackCurrent');
-  document.querySelectorAll('.rack-side-h span')[1].textContent = t('rackAfter');
+  document.querySelector('[data-rack-label="current"]').textContent = t('rackCurrent');
+  document.querySelector('[data-rack-label="after"]').textContent = t('rackAfter');
   document.querySelector('.rack-copy[data-copy="depois"]').textContent = t('rackCopy');
   $('.ft p').textContent = t('footer');
   document.querySelectorAll('.lang-btn').forEach(function (btn) {
@@ -1654,6 +1673,12 @@ addRow();
     ed.querySelector('.re-name').focus();
   }
 
+  function rerenderRackUI() {
+    renderRack('atual');
+    renderRack('depois');
+    recalcRack();
+  }
+
   function recalcRack() {
     const R = parseFloat((document.getElementById('rack-bonus').value || '0').replace(',', '.')) || 0;
     const rr = R / 100;
@@ -1760,11 +1785,9 @@ addRow();
     copyAtualToDepois();
   });
 
-  window.recalcRackUI = recalcRack;
+  window.recalcRackUI = rerenderRackUI;
   applyStaticI18n();
-  renderRack('atual');
-  renderRack('depois');
-  recalcRack();
+  rerenderRackUI();
 })();
 </script>
 </body>

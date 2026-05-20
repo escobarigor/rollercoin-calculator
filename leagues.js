@@ -141,23 +141,9 @@ function analyze(gh) {
   };
 }
 
-/* ------------------------------------------------------------
- * compareToLeague(gh, targetLeagueId) -> veredito p/ uma liga alvo
- * Responde direto: "esse poder passa pra liga X ou não?"
- * ---------------------------------------------------------- */
-function compareToLeague(gh, targetLeagueId) {
-  const target = LEAGUES.find(l => l.id === targetLeagueId);
-  if (!target) return null;
-  return {
-    target,
-    reaches: gh >= target.min,
-    missing: Math.max(0, target.min - gh),
-  };
-}
-
 /* Expõe tudo num objeto global pro app.js usar.
  * (projeto estático sem módulos ES — mantém simples) */
 window.RLC = {
   UNIT, LEAGUES,
-  parsePower, formatPower, getLeague, analyze, compareToLeague,
+  parsePower, formatPower, getLeague, analyze,
 };
