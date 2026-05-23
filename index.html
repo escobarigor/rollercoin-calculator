@@ -9,6 +9,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<meta name="google-adsense-account" content="ca-pub-1485930407901750" />
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1485930407901750"
+     crossorigin="anonymous"></script>
 
 <!-- ============================================================
      ESTILO  (era css/style.css — agora embutido)
@@ -52,7 +55,24 @@ body {
   background: repeating-linear-gradient(to bottom, transparent 0 3px, rgba(0,0,0,.12) 3px 4px);
   mix-blend-mode: overlay;
 }
-.wrap { max-width: 540px; margin: 0 auto; }
+.page-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 160px) minmax(0, 540px) minmax(0, 160px);
+  gap: 24px; align-items: start; justify-content: center;
+  max-width: 980px; margin: 0 auto;
+}
+.wrap { width: 100%; max-width: 540px; margin: 0 auto; }
+.ad-rail {
+  position: sticky; top: 24px; min-height: 600px;
+  display: flex; align-items: center; justify-content: center;
+}
+.ad-bottom {
+  grid-column: 1 / -1; width: 100%; max-width: 728px;
+  min-height: 90px; margin: 28px auto 0;
+}
+.adsbygoogle { display: block; width: 100%; }
+.ad-rail .adsbygoogle { min-width: 120px; max-width: 160px; min-height: 600px; }
+.ad-bottom .adsbygoogle { min-height: 90px; }
 .hd { text-align: center; margin-bottom: 26px; }
 .hd-mark { font-size: 30px; line-height: 1; filter: drop-shadow(0 0 10px var(--cyan)); }
 .hd h1 { font-size: 30px; font-weight: 700; letter-spacing: 2px; margin-top: 6px; }
@@ -265,6 +285,10 @@ body {
 }
 .test-badge:hover { filter: brightness(1.04); }
 
+@media (max-width: 960px) {
+  .page-shell { display: block; max-width: 540px; }
+  .ad-rail { display: none; }
+}
 @media (max-width: 460px) {
   .result-top { flex-direction: column; align-items: flex-start; }
   .result-power { text-align: left; }
@@ -400,6 +424,15 @@ body {
 <body>
 
 <div class="scanline"></div>
+
+<div class="page-shell">
+  <aside class="ad-rail ad-rail-left" aria-label="Publicidade lateral esquerda">
+    <ins class="adsbygoogle"
+         data-ad-client="ca-pub-1485930407901750"
+         data-ad-slot=""
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+  </aside>
 
 <main class="wrap">
 
@@ -593,6 +626,23 @@ body {
   </footer>
 
 </main>
+
+  <aside class="ad-rail ad-rail-right" aria-label="Publicidade lateral direita">
+    <ins class="adsbygoogle"
+         data-ad-client="ca-pub-1485930407901750"
+         data-ad-slot=""
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+  </aside>
+
+  <div class="ad-bottom" aria-label="Publicidade inferior">
+    <ins class="adsbygoogle"
+         data-ad-client="ca-pub-1485930407901750"
+         data-ad-slot=""
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+  </div>
+</div>
 
 <!-- ============================================================
      NÚCLEO  (era js/leagues.js — agora embutido)
@@ -1475,6 +1525,20 @@ $('#sim-bonus-add').addEventListener('input', recalcSim);
 
 // começa com uma linha pronta (o simulador fica escondido até haver base)
 addRow();
+
+/* Google AdSense: durante a fase de aprovação não há data-ad-slot.
+ * O script fica instalado e as chamadas são protegidas para não quebrar
+ * a calculadora se o AdSense bloquear ou ainda não preencher anúncios. */
+function initAds() {
+  document.querySelectorAll('.adsbygoogle[data-ad-slot]').forEach(function (ad) {
+    if (!ad.dataset.adSlot || ad.dataset.adsbygoogleStatus) return;
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (err) {}
+  });
+}
+
+initAds();
 
 </script>
 <script>
