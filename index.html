@@ -54,11 +54,11 @@ body {
 }
 .page-shell {
   display: grid;
-  grid-template-columns: minmax(0, 540px) minmax(120px, 160px);
+  grid-template-columns: minmax(120px, 160px) minmax(0, 540px) minmax(120px, 160px);
   gap: 24px; align-items: start; justify-content: center;
-  max-width: 728px; margin: 0 auto;
+  max-width: 908px; margin: 0 auto;
 }
-.wrap { width: 100%; max-width: 540px; margin: 0 auto; }
+.wrap { grid-column: 2; width: 100%; max-width: 540px; margin: 0 auto; }
 .sponsor-rail {
   position: sticky; top: 24px; min-height: 600px;
   display: flex; align-items: center; justify-content: center;
@@ -78,6 +78,7 @@ body {
   text-decoration: none; box-shadow: 0 0 18px rgba(3,225,228,.35);
 }
 .ad-rail {
+  grid-column: 3;
   position: sticky; top: 24px; min-height: 600px;
   display: flex; align-items: center; justify-content: center;
 }
@@ -90,7 +91,7 @@ body {
   height: 600px; min-height: 25px; overflow: hidden;
 }
 .sponsor-bottom {
-  grid-column: 1 / -1; width: 100%; max-width: 728px;
+  grid-column: 2; width: 100%; max-width: 540px;
   margin: 28px auto 0;
 }
 .sponsor-bottom .sponsor-card { padding: 14px 18px; }
@@ -341,6 +342,7 @@ body {
 
 @media (max-width: 960px) {
   .page-shell { display: block; max-width: 540px; }
+  .wrap, .sponsor-bottom { max-width: 540px; }
   .sponsor-rail, .ad-rail { display: none; }
 }
 @media (max-width: 460px) {
