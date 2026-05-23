@@ -54,9 +54,9 @@ body {
 }
 .page-shell {
   display: grid;
-  grid-template-columns: minmax(0, 160px) minmax(0, 540px) minmax(0, 160px);
+  grid-template-columns: minmax(0, 540px) minmax(120px, 160px);
   gap: 24px; align-items: start; justify-content: center;
-  max-width: 980px; margin: 0 auto;
+  max-width: 728px; margin: 0 auto;
 }
 .wrap { width: 100%; max-width: 540px; margin: 0 auto; }
 .sponsor-rail {
@@ -76,6 +76,18 @@ body {
   min-height: 34px; padding: 8px 12px; border-radius: 999px;
   color: #061014; background: var(--cyan); font-size: 12px; font-weight: 800;
   text-decoration: none; box-shadow: 0 0 18px rgba(3,225,228,.35);
+}
+.ad-rail {
+  position: sticky; top: 24px; min-height: 600px;
+  display: flex; align-items: center; justify-content: center;
+}
+.aads-unit {
+  width: 160px; min-width: 120px; min-height: 600px;
+  display: flex; align-items: center; justify-content: center;
+}
+.aads-unit iframe {
+  border: 0; padding: 0; width: 160px; min-width: 120px;
+  height: 600px; min-height: 25px; overflow: hidden;
 }
 .sponsor-bottom {
   grid-column: 1 / -1; width: 100%; max-width: 728px;
@@ -329,7 +341,7 @@ body {
 
 @media (max-width: 960px) {
   .page-shell { display: block; max-width: 540px; }
-  .sponsor-rail { display: none; }
+  .sponsor-rail, .ad-rail { display: none; }
 }
 @media (max-width: 460px) {
   .result-top { flex-direction: column; align-items: flex-start; }
@@ -470,14 +482,6 @@ body {
 <div class="scanline"></div>
 
 <div class="page-shell">
-  <aside class="sponsor-rail sponsor-rail-left" aria-label="Apoie o projeto">
-    <div class="sponsor-card">
-      <strong>GitHub Sponsors</strong>
-      <span>Ajude a manter a calculadora online, gratuita e sem anúncios.</span>
-      <a href="https://github.com/sponsors/escobarigor" target="_blank" rel="noopener noreferrer">Apoiar projeto</a>
-    </div>
-  </aside>
-
 <main class="wrap">
 
   <div class="topbar">
@@ -671,38 +675,11 @@ body {
 
 </main>
 
-  <aside class="sponsor-rail sponsor-rail-right" aria-label="Publicidade lateral direita">
-    <!-- BEGIN AADS AD UNIT 2438616 -->
-    <div style="position: relative; z-index: 49; width: 100%; min-height: 600px;">
-      <input autocomplete="off" type="checkbox" id="aadsstickympirxgp1" hidden />
-      <div style="padding-top: 0; padding-bottom: 0;">
-        <div style="width:100%;height:600px;position:relative;text-align:center;font-size:0;min-width:100px">
-          <label for="aadsstickympirxgp1" style="bottom: 24px;margin:0 auto;right:0;left:0;max-width:24px; position: absolute;border-radius: 4px; background: rgba(248, 248, 249, 0.70); padding: 4px;z-index: 49;cursor:pointer">
-            <svg fill="#000000" height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490">
-              <polygon points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490 489.292,457.678 277.331,245.004 489.292,32.337 "/>
-            </svg>
-          </label>
-          <div id="aads-frame-2438616" style="width: 100%;margin: auto;position: relative; z-index: 48;height:100%; display: flex;flex-direction: column; justify-content: center">
-            <iframe data-aa="2438616" src="//acceptable.a-ads.com/2438616/?size=Adaptive" title="Publicidade" loading="lazy" style="border:0; padding:0; width:70%; height:70%; overflow:hidden; margin: 0 auto"></iframe>
-          </div>
-        </div>
-        <style>
-          #aadsstickympirxgp1:checked + div {
-            display: none;
-          }
-        </style>
-      </div>
+  <aside class="ad-rail" aria-label="Publicidade lateral direita">
+    <div class="aads-unit">
+      <iframe data-aa="2438616" src="//acceptable.a-ads.com/2438616/?size=Adaptive" title="Publicidade" loading="lazy"></iframe>
     </div>
-    <!-- END AADS AD UNIT 2438616 -->
   </aside>
-
-  <div class="sponsor-bottom" aria-label="Apoie o projeto">
-    <div class="sponsor-card">
-      <strong>GitHub Sponsors</strong>
-      <span>RC Booom Calculator é um projeto gratuito. Apoie no GitHub Sponsors para ajudar a manter sem anúncios.</span>
-      <a href="https://github.com/sponsors/escobarigor" target="_blank" rel="noopener noreferrer">Apoiar no GitHub</a>
-    </div>
-  </div>
 
   <section class="sponsor-bottom crypto-donate" aria-label="Doação em criptomoeda">
     <div class="sponsor-card">
